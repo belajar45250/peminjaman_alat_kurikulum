@@ -1,9 +1,10 @@
 <?php
-// database/migrations/xxxx_update_tabel_peminjaman_tambah_jam_pelajaran.php
+// database/migrations/2026_04_15_130733_update_tabel_peminjaman_tambah_jam_pelajaran.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -11,24 +12,35 @@ return new class extends Migration
     {
         Schema::table('peminjaman', function (Blueprint $table) {
             // Hapus nomor_hp
-            $table->dropColumn('nomor_hp');
+            if (Schema::hasColumn('peminjaman', 'nomor_hp')) {
+                $table->dropColumn('nomor_hp');
+            }
 
-            // Tambah jam pelajaran
-            $table->tinyInteger('jam_pelajaran_mulai')->unsigned()
-                  ->after('mata_pelajaran')
-                  ->comment('Jam pelajaran ke berapa mulai pinjam (1-8)');
+            // Tambah semua kolom baru sebagai NULLABLE dulu
+            $table->tinyInteger('jam_pelajaran_mulai')->unsigned()->nullable()
+                  ->after('mata_pelajaran');
+            $table->tinyInteger('jam_pelajaran_selesai')->unsigned()->nullable()
+                  ->after('jam_pelajaran_mulai');
+            $table->string('waktu_mulai_pinjam', 5)->nullable()
+                  ->after('jam_pelajaran_selesai');
+            $table->string('waktu_selesai_pinjam', 5)->nullable()
+                  ->after('waktu_mulai_pinjam');
+        });
 
-            $table->tinyInteger('jam_pelajaran_selesai')->unsigned()
-                  ->after('jam_pelajaran_mulai')
-                  ->comment('Jam pelajaran ke berapa selesai pakai');
+        // Isi data lama dengan nilai default agar tidak null
+        DB::table('peminjaman')->whereNull('jam_pelajaran_mulai')->update([
+            'jam_pelajaran_mulai'   => 1,
+            'jam_pelajaran_selesai' => 1,
+            'waktu_mulai_pinjam'    => '06:45',
+            'waktu_selesai_pinjam'  => '07:30',
+        ]);
 
-            $table->string('waktu_mulai_pinjam', 5)
-                  ->after('jam_pelajaran_selesai')
-                  ->comment('HH:MM jam mulai, misal 06:45');
-
-            $table->string('waktu_selesai_pinjam', 5)
-                  ->after('waktu_mulai_pinjam')
-                  ->comment('HH:MM jam selesai, misal 09:00');
+        // Sekarang baru ubah jadi NOT NULL
+        Schema::table('peminjaman', function (Blueprint $table) {
+            $table->tinyInteger('jam_pelajaran_mulai')->unsigned()->nullable(false)->change();
+            $table->tinyInteger('jam_pelajaran_selesai')->unsigned()->nullable(false)->change();
+            $table->string('waktu_mulai_pinjam', 5)->nullable(false)->change();
+            $table->string('waktu_selesai_pinjam', 5)->nullable(false)->change();
         });
     }
 

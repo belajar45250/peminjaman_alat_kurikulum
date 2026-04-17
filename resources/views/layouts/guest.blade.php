@@ -8,6 +8,28 @@
     <title>@yield('title', 'Peminjaman Alat')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    {{-- PWA Meta Tags --}}
+<meta name="theme-color" content="#3b82f6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PinjamAlat">
+<meta name="msapplication-TileColor" content="#3b82f6">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+
+{{-- Web Manifest --}}
+<link rel="manifest" href="/manifest.json">
+
+{{-- Apple Touch Icons --}}
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+
+{{-- Favicon --}}
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-72x72.png">
+
+
     <style>
         body {
             min-height: 100vh;
@@ -60,7 +82,35 @@
             @yield('content')
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>{{-- Sebelum </body> di semua layout --}}
+<script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker
+                .register('/sw.js')
+                .then(reg => {
+                    console.log('SW registered:', reg.scope);
+
+                    // Cek update SW
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // Ada versi baru — tampilkan notif update
+                                if (confirm('Versi baru tersedia! Muat ulang sekarang?')) {
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    });
+                })
+                .catch(err => console.log('SW failed:', err));
+        });
+    }
+</script>
+
+
     @yield('scripts')
 </body>
 </html>

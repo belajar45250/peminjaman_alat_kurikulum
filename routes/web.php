@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\PeminjamanController;
 use App\Http\Controllers\Admin\PengembalianController;
 use App\Http\Controllers\Admin\PengaturanController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Admin\HistoryKerusakanController;
 use App\Http\Controllers\Publik\PeminjamanPublikController;
 use Illuminate\Support\Facades\Route;
 
@@ -67,4 +68,14 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('pengaturan/tambah-user', [PengaturanController::class, 'tambahUser'])->name('pengaturan.tambah-user');
     Route::delete('pengaturan/hapus-user/{user}', [PengaturanController::class, 'hapusUser'])->name('pengaturan.hapus-user');
     Route::post('pengaturan/ganti-password', [PengaturanController::class, 'gantiPassword'])->name('pengaturan.ganti-password');
+
+    Route::prefix('history-kerusakan')->name('history-kerusakan.')->group(function () {
+    Route::get('/',                             [HistoryKerusakanController::class, 'index'])              ->name('index');
+    Route::get('/tambah',                       [HistoryKerusakanController::class, 'create'])             ->name('create');
+    Route::post('/',                            [HistoryKerusakanController::class, 'store'])              ->name('store');
+    Route::get('/{historyKerusakan}',           [HistoryKerusakanController::class, 'show'])               ->name('show');
+    Route::post('/{historyKerusakan}/tindak-lanjut', [HistoryKerusakanController::class, 'updateTindakLanjut']) ->name('tindak-lanjut');
+    Route::post('/{historyKerusakan}/denda',    [HistoryKerusakanController::class, 'updateDenda'])        ->name('denda');
+});
+    Route::get('/offline', [OfflineController::class, 'index'])->name('offline');
 });

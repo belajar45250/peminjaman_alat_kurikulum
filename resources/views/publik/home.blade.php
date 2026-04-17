@@ -7,6 +7,27 @@
     <title>Sistem Peminjaman Alat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    {{-- PWA Meta Tags --}}
+<meta name="theme-color" content="#3b82f6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PinjamAlat">
+<meta name="msapplication-TileColor" content="#3b82f6">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+
+{{-- Web Manifest --}}
+<link rel="manifest" href="/manifest.json">
+
+{{-- Apple Touch Icons --}}
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
+
+{{-- Favicon --}}
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-72x72.png">
+
     <style>
         body {
             margin: 0;
@@ -506,6 +527,91 @@
             if (e.key === 'Escape') tutupScanner();
         });
     </script>
+
+
+{{-- Tombol Install App --}}
+<div id="installBanner" style="
+    display:none;
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#1e293b;
+    color:#fff;
+    padding:12px 20px;
+    border-radius:50px;
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+    z-index:9999;
+    align-items:center;
+    gap:12px;
+    font-size:.875rem;
+    white-space:nowrap;
+">
+    <i class="bi bi-download"></i>
+    <span>Install Aplikasi PinjamAlat</span>
+    <button id="btnInstall" style="
+        background:#3b82f6;
+        border:none;
+        color:#fff;
+        padding:6px 16px;
+        border-radius:20px;
+        font-weight:600;
+        cursor:pointer;
+        font-size:.8rem;
+    ">Install</button>
+    <button id="btnTutupInstall" style="
+        background:transparent;
+        border:none;
+        color:#94a3b8;
+        cursor:pointer;
+        font-size:1rem;
+        padding:0 4px;
+    ">✕</button>
+</div>
+
+<script>
+    let deferredPrompt = null;
+    const installBanner = document.getElementById('installBanner');
+    const btnInstall    = document.getElementById('btnInstall');
+    const btnTutup      = document.getElementById('btnTutupInstall');
+
+    // Tangkap event sebelum browser tampilkan prompt default
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBanner.style.display = 'flex';
+    });
+
+    // Klik Install
+    btnInstall.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            installBanner.style.display = 'none';
+        }
+        deferredPrompt = null;
+    });
+
+    // Tutup banner
+    btnTutup.addEventListener('click', () => {
+        installBanner.style.display = 'none';
+    });
+
+    // Sudah terinstall
+    window.addEventListener('appinstalled', () => {
+        installBanner.style.display = 'none';
+        deferredPrompt = null;
+    });
+
+    // Handle shortcut scan dari manifest
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('action') === 'scan') {
+        window.addEventListener('load', () => {
+            setTimeout(() => bukaScanner(), 500);
+        });
+    }
+</script>
 
 </body>
 </html>

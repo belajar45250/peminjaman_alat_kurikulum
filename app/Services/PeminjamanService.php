@@ -7,6 +7,7 @@ use App\Models\Alat;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
 use App\Models\Pengaturan;
+use App\Models\HistoryKerusakan;
 use Illuminate\Support\Facades\DB;
 
 class PeminjamanService
@@ -117,6 +118,10 @@ class PeminjamanService
                 'diproses_oleh'       => auth()->id(),
             ]);
 
+            if (in_array($kondisiKembali, ['rusak_berat', 'hilang'])) {
+                $this->catatKerusakan($pengembalian, $alat, $peminjaman, $kondisiKembali);
+            }
+
             // Update status peminjaman
             $peminjaman->update(['status' => 'dikembalikan']);
 
@@ -129,6 +134,35 @@ class PeminjamanService
             return $pengembalian;
         });
     }
+
+    // ── Tambah method baru ──
+private function catatKerusakan(
+    Pengembalian $pengembalian,
+    Alat $alat,
+    Peminjaman $peminjaman,
+    string $kondisi
+): void {
+    HistoryKerusakan::create([
+        'alat_id'             => $alat->id,
+        'pengembalian_id'     => $pengembalian->id,
+        'nama_alat_snapshot'  => $alat->nama_alat,
+        'kode_alat_snapshot'  => $alat->kode_alat,
+        'nama_peminjam'       => $peminjaman->nama_peminjam,
+        'kelas'               => $peminjaman->kelas,
+        'jenis_kerusakan'     => $kondisi === 'hilang' ? 'hilang' : 'rusak_berat',
+        'kondisi_sebelum'     => 'baik',
+        'deskripsi_kerusakan' => $kondisi === 'hilang'
+                                    ? 'Alat hilang saat dipinjam.'
+                                    : 'Alat dikembalikan dalam kondisi rusak berat.',
+        'foto_kerusakan'      => null,
+        'harga_alat'          => $alat->harga,
+        'jumlah_denda'        => $pengembalian->jumlah_denda,
+        'status_denda'        => $pengembalian->jumlah_denda > 0 ? 'belum_lunas' : 'tidak_ada',
+        'status_tindak_lanjut' => 'menunggu',
+        'dicatat_oleh'        => auth()->id(),
+        'tanggal_rusak'       => now(),
+    ]);
+}
 
     private function hitungDenda(Alat $alat, string $kondisi): array
     {
