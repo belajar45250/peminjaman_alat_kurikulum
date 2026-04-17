@@ -1,30 +1,30 @@
 <?php
+// database/seeders/UserSeeder.php
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('users')->insert([
+        // Cek apakah user sudah ada, kalau ada jangan insert lagi
+        User::firstOrCreate(
+            ['username' => 'admin'],
             [
-                'name'       => 'Administrator',
-                'username'   => 'admin',
-                'password'   => Hash::make('admin123'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name'       => 'Petugas',
-                'username'   => 'petugas',
-                'password'   => Hash::make('petugas123'),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'name' => 'Administrator',
+                'password' => bcrypt('admin123'), // Ganti password ini!
             ]
-        ]);
+        );
+
+        User::firstOrCreate(
+            ['username' => 'petugas'],
+            [
+                'name' => 'Petugas',
+                'password' => bcrypt('petugas123'), // Ganti password ini!
+            ]
+        );
     }
 }
