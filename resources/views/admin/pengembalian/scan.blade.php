@@ -1,68 +1,90 @@
 {{-- resources/views/admin/pengembalian/scan.blade.php --}}
 @extends('layouts.app')
-
 @section('title', 'Proses Pengembalian')
-
-@section('breadcrumb')
-    <li class="breadcrumb-item active">Pengembalian</li>
-@endsection
 
 @section('content')
 
-<div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8">
+<div class="mb-8">
+    <p class="font-sans text-[0.55rem] font-semibold tracking-[0.35em] uppercase text-label mb-1">Transaksi</p>
+    <h1 class="font-serif text-ink text-3xl font-normal leading-none">Proses Pengembalian</h1>
+    <div class="mt-3 h-px w-10 bg-rule"></div>
+</div>
 
-        <div class="card mb-3">
-            <div class="card-header">
-                <i class="bi bi-qr-code-scan me-2 text-primary"></i>Scan QR Code Alat
-            </div>
-            <div class="card-body p-4">
+<div class="max-w-xl mx-auto space-y-5">
 
-                <form method="POST" action="{{ route('admin.pengembalian.validasi') }}" id="formScan">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label">Hash QR Code</label>
+    {{-- Scanner Form --}}
+    <div class="bg-paper border border-rule">
+        <div class="border-b border-rule px-6 py-4">
+            <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Scanner</p>
+            <h2 class="font-serif text-ink text-lg font-normal mt-0.5">Scan QR Code Alat</h2>
+        </div>
+        <div class="px-6 py-6">
+            <form method="POST" action="{{ route('admin.pengembalian.validasi') }}" id="formScan">
+                @csrf
+                <div class="mb-5">
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                        Hash QR Code
+                    </label>
+                    <div class="relative">
                         <input type="text" name="qr_hash" id="qrInput"
-                               class="form-control form-control-lg font-monospace"
                                placeholder="Scan QR atau arahkan kamera..."
-                               autocomplete="off" autofocus>
-                        <div class="form-text">
-                            Input otomatis saat menggunakan scanner USB/Bluetooth.
-                        </div>
+                               autocomplete="off" autofocus
+                               class="peer w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                      font-sans text-[0.88rem] font-mono tracking-wide text-ink outline-none
+                                      placeholder-ghost transition-colors duration-200 focus:border-ink">
+                        <span class="absolute bottom-0 left-0 h-px w-0 bg-ink transition-all duration-[350ms] peer-focus:w-full"></span>
                     </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-warning btn-lg fw-bold">
-                            <i class="bi bi-search me-2"></i>Cari Data Peminjaman
-                        </button>
-                        <button type="button" class="btn btn-outline-primary" id="btnKamera">
-                            <i class="bi bi-camera me-1"></i>Gunakan Kamera HP
-                        </button>
-                    </div>
-                </form>
+                    <p class="mt-1.5 font-sans text-[0.58rem] tracking-wide text-ghost">
+                        Input otomatis saat menggunakan scanner USB/Bluetooth.
+                    </p>
+                </div>
 
-                {{-- Area kamera --}}
-                <div id="area-kamera" class="mt-3" style="display:none;">
-                    <div id="qr-reader" style="width:100%;border-radius:8px;overflow:hidden;"></div>
-                    <button class="btn btn-sm btn-outline-danger mt-2 w-100" id="btnTutupKamera">
-                        <i class="bi bi-x-circle me-1"></i>Tutup Kamera
+                <div class="flex flex-col gap-3">
+                    <button type="submit"
+                        class="w-full flex items-center justify-center gap-2 bg-espresso text-paper py-3.5
+                               font-sans text-[0.6rem] font-semibold tracking-[0.28em] uppercase
+                               hover:bg-ink transition-colors active:scale-[0.99]">
+                        <i class="fas fa-search text-[0.5rem]"></i> Cari Data Peminjaman
+                    </button>
+                    <button type="button" id="btnKamera"
+                        class="w-full flex items-center justify-center gap-2 border border-rule text-label py-3
+                               font-sans text-[0.6rem] font-semibold tracking-[0.28em] uppercase
+                               hover:bg-sand transition-colors">
+                        <i class="fas fa-camera text-[0.5rem]"></i> Gunakan Kamera HP
                     </button>
                 </div>
-            </div>
-        </div>
+            </form>
 
-        {{-- Tips --}}
-        <div class="card border-0 bg-light">
-            <div class="card-body">
-                <h6 class="fw-bold mb-2"><i class="bi bi-lightbulb me-1 text-warning"></i>Cara Pengembalian</h6>
-                <ol class="mb-0 small text-muted">
-                    <li>Scan QR Code yang menempel di alat</li>
-                    <li>Sistem akan menampilkan data peminjaman aktif</li>
-                    <li>Pilih kondisi alat saat dikembalikan</li>
-                    <li>Klik "Proses Pengembalian"</li>
-                </ol>
+            {{-- Area kamera --}}
+            <div id="area-kamera" class="mt-5" style="display:none;">
+                <div id="qr-reader" class="w-full overflow-hidden border border-rule"></div>
+                <button id="btnTutupKamera"
+                        class="mt-3 w-full flex items-center justify-center gap-2 border border-rule text-label py-2.5
+                               font-sans text-[0.58rem] font-semibold tracking-[0.2em] uppercase
+                               hover:bg-red-50 hover:border-red-200 hover:text-red-800 transition-all">
+                    <i class="fas fa-xmark text-[0.5rem]"></i> Tutup Kamera
+                </button>
             </div>
         </div>
     </div>
+
+    {{-- Petunjuk --}}
+    <div class="bg-paper border border-rule relative overflow-hidden">
+        <div class="pointer-events-none absolute bottom-4 right-4 h-8 w-8 border-b border-r border-rule"></div>
+        <div class="px-6 py-5">
+            <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label mb-4">Petunjuk</p>
+            <ol class="space-y-3">
+                @foreach(['Scan QR Code yang menempel di alat','Sistem menampilkan data peminjaman aktif','Pilih kondisi alat saat dikembalikan','Klik tombol proses pengembalian'] as $i => $step)
+                <li class="flex items-start gap-3">
+                    <span class="w-5 h-5 bg-espresso text-paper flex items-center justify-center flex-shrink-0 mt-0.5
+                                 font-sans text-[0.5rem] font-semibold">{{ $i+1 }}</span>
+                    <span class="font-sans text-[0.72rem] text-dim leading-relaxed">{{ $step }}</span>
+                </li>
+                @endforeach
+            </ol>
+        </div>
+    </div>
+
 </div>
 
 @endsection
@@ -71,25 +93,21 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
     let scanner = null;
-    const btnKamera    = document.getElementById('btnKamera');
-    const btnTutup     = document.getElementById('btnTutupKamera');
-    const areaKamera   = document.getElementById('area-kamera');
-    const qrInput      = document.getElementById('qrInput');
+    const btnKamera  = document.getElementById('btnKamera');
+    const btnTutup   = document.getElementById('btnTutupKamera');
+    const areaKamera = document.getElementById('area-kamera');
+    const qrInput    = document.getElementById('qrInput');
 
     function stopScanner() {
-        if (scanner) {
-            scanner.stop().catch(() => {});
-            scanner = null;
-        }
+        if (scanner) { scanner.stop().catch(() => {}); scanner = null; }
         areaKamera.style.display = 'none';
-        btnKamera.innerHTML = '<i class="bi bi-camera me-1"></i>Gunakan Kamera HP';
+        btnKamera.innerHTML = '<i class="fas fa-camera text-[0.5rem]"></i> Gunakan Kamera HP';
     }
 
     btnKamera.addEventListener('click', function() {
         if (scanner) { stopScanner(); return; }
-
         areaKamera.style.display = 'block';
-        btnKamera.innerHTML = '<i class="bi bi-stop-circle me-1"></i>Hentikan Kamera';
+        btnKamera.innerHTML = '<i class="fas fa-stop text-[0.5rem]"></i> Hentikan Kamera';
         scanner = new Html5Qrcode("qr-reader");
         scanner.start(
             { facingMode: "environment" },

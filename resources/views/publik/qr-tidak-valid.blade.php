@@ -1,45 +1,86 @@
 {{-- resources/views/publik/qr-tidak-valid.blade.php --}}
 @extends('layouts.guest')
-
 @section('title', 'QR Tidak Valid')
 
-@section('card_header')
-    <div style="width:60px;height:60px;background:rgba(255,255,255,.2);border-radius:50%;
-                display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
-        <i class="bi bi-exclamation-triangle-fill fs-3"></i>
-    </div>
-    <h5 class="fw-bold mb-1">Tidak Dapat Dipinjam</h5>
-    <p class="mb-0 opacity-75 small">QR Code tidak valid atau alat tidak tersedia</p>
-@endsection
-
 @section('content')
-    <div class="text-center py-2">
-        <p class="text-muted mb-4">{{ $pesan }}</p>
 
-        @if($alat)
-        <div class="bg-light rounded-3 p-3 mb-4 text-start">
-            <div class="small">
-                <div class="text-muted">Alat</div>
-                <div class="fw-semibold">{{ $alat->nama_alat }}</div>
-                <div class="mt-2 text-muted">Status</div>
-                @if($alat->status === 'dipinjam')
-                    <span class="badge bg-warning text-dark">
-                        <i class="bi bi-clock me-1"></i>Sedang Dipinjam
-                    </span>
-                @else
-                    <span class="badge bg-secondary">{{ ucfirst($alat->status) }}</span>
+<div class="min-h-screen bg-cream flex items-center justify-center px-4 py-16">
+    <div class="w-full max-w-sm">
+
+        <div class="bg-paper border border-rule relative overflow-hidden">
+
+            {{-- Corner ornament --}}
+            <div class="pointer-events-none absolute top-5 right-5 h-8 w-8 border-t border-r border-rule"></div>
+            <div class="pointer-events-none absolute bottom-5 left-5 h-8 w-8 border-b border-l border-rule"></div>
+
+            <div class="px-8 py-10 text-center">
+
+                {{-- Icon --}}
+                <div class="w-16 h-16 bg-red-50 border border-red-200 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-triangle-exclamation text-red-700 text-xl"></i>
+                </div>
+
+                <p class="font-sans text-[0.52rem] font-semibold tracking-[0.35em] uppercase text-label mb-2">
+                    Perhatian
+                </p>
+                <h1 class="font-serif text-ink text-2xl font-normal leading-none mb-3">
+                    Tidak Dapat Dipinjam
+                </h1>
+                <div class="h-px w-10 bg-rule mx-auto mb-6"></div>
+
+                {{-- Pesan error --}}
+                <div class="border-l-2 border-red-300 bg-red-50/50 px-4 py-3 text-left mb-6">
+                    <p class="font-sans text-[0.72rem] tracking-wide text-red-800 leading-relaxed">
+                        {{ $pesan }}
+                    </p>
+                </div>
+
+                {{-- Info Alat --}}
+                @if($alat)
+                <div class="bg-cream/50 border border-rule/60 divide-y divide-rule/40 mb-6 text-left">
+                    <div class="flex items-center justify-between px-4 py-3">
+                        <span class="font-sans text-[0.5rem] tracking-[0.15em] uppercase text-ghost">Alat</span>
+                        <span class="font-sans text-[0.78rem] text-ink font-medium">{{ $alat->nama_alat }}</span>
+                    </div>
+                    <div class="flex items-center justify-between px-4 py-3">
+                        <span class="font-sans text-[0.5rem] tracking-[0.15em] uppercase text-ghost">Kode</span>
+                        <code class="font-mono text-[0.68rem] text-dim bg-cream px-1.5 py-0.5">{{ $alat->kode_alat }}</code>
+                    </div>
+                    <div class="flex items-center justify-between px-4 py-3">
+                        <span class="font-sans text-[0.5rem] tracking-[0.15em] uppercase text-ghost">Status</span>
+                        @if($alat->status === 'dipinjam')
+                            <span class="font-sans text-[0.48rem] tracking-[0.1em] uppercase px-2 py-0.5 border bg-amber-50 text-amber-800 border-amber-200">
+                                Sedang Dipinjam
+                            </span>
+                        @else
+                            <span class="font-sans text-[0.48rem] tracking-[0.1em] uppercase px-2 py-0.5 border bg-sand text-dim border-rule">
+                                {{ ucfirst($alat->status) }}
+                            </span>
+                        @endif
+                    </div>
+                </div>
                 @endif
+
+                <p class="font-sans text-[0.62rem] tracking-wide text-ghost mb-8">
+                    Hubungi petugas untuk bantuan lebih lanjut.
+                </p>
+
+                {{-- CTA --}}
+                <a href="{{ route('home') }}"
+                   class="flex items-center justify-center gap-2 w-full bg-espresso text-paper py-3.5
+                          font-sans text-[0.6rem] font-semibold tracking-[0.28em] uppercase
+                          hover:bg-ink transition-colors active:scale-[0.99]">
+                    <i class="fas fa-arrow-left text-[0.5rem]"></i>
+                    Kembali ke Halaman Utama
+                </a>
+
             </div>
         </div>
-        @endif
 
-        <p class="text-muted small mb-4">
-            Hubungi petugas untuk bantuan lebih lanjut.
+        <p class="text-center font-sans text-[0.52rem] tracking-[0.12em] uppercase text-ghost/60 mt-5">
+            {{ \App\Models\Pengaturan::ambil('nama_sekolah', 'Sistem Peminjaman') }}
         </p>
-
-        {{-- Tombol kembali ke home --}}
-        <a href="{{ route('home') }}" class="btn btn-primary w-100">
-            <i class="bi bi-arrow-left me-2"></i>Kembali ke Halaman Utama
-        </a>
     </div>
+</div>
+
 @endsection

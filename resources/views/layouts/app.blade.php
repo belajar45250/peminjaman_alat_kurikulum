@@ -3,331 +3,286 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') — PinjamAlat</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>@yield('title', 'Dashboard') — Sistem Peminjaman</title>
 
-{{-- PWA Meta Tags --}}
-<meta name="theme-color" content="#3b82f6">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="PinjamAlat">
-<meta name="msapplication-TileColor" content="#3b82f6">
-<meta name="msapplication-TileImage" content="/icons/icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-{{-- Web Manifest --}}
-<link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1c1917">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PinjamAlat">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" href="/icons/icon-192.png">
 
-{{-- Apple Touch Icon --}}
-<link rel="apple-touch-icon" href="/icons/icon-192.png">
-
-{{-- Favicon --}}
-<link rel="icon" type="image/png" href="/icons/icon-192.png">
-
-
-    <style>
-        :root {
-            --sidebar-width: 255px;
-            --sidebar-bg: #1e293b;
-            --sidebar-hover: #334155;
-            --topbar-height: 60px;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans:  ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        espresso: '#1c1917',
+                        ink:      '#1a1714',
+                        dim:      '#4a4540',
+                        label:    '#6e665e',
+                        rule:     '#c8bfb0',
+                        ghost:    '#a89f94',
+                        paper:    '#fffdf9',
+                        cream:    '#f5f0e8',
+                        sand:     '#e8e0d0',
+                    },
+                }
+            }
         }
-        body { background: #f1f5f9; font-size: 0.925rem; }
-
-        /* ── Sidebar ── */
-        .sidebar {
-            position: fixed;
-            top: 0; left: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: var(--sidebar-bg);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            z-index: 200;
-            transition: transform .25s ease;
-        }
-        .sidebar-brand {
-            padding: 20px 18px 16px;
-            border-bottom: 1px solid #334155;
-        }
-        .sidebar-brand .brand-name {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #fff;
-        }
-        .sidebar-brand .brand-sub {
-            font-size: .72rem;
-            color: #64748b;
-        }
-        .sidebar-nav { padding: 10px 10px; flex: 1; }
-        .nav-section-label {
-            font-size: .68rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: .08em;
-            color: #475569;
-            padding: 14px 8px 6px;
-        }
-        .sidebar-nav .nav-link {
-            color: #94a3b8;
-            border-radius: 8px;
-            padding: 9px 12px;
-            margin-bottom: 2px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: .875rem;
-            transition: background .15s, color .15s;
-        }
-        .sidebar-nav .nav-link:hover { background: var(--sidebar-hover); color: #e2e8f0; }
-        .sidebar-nav .nav-link.active { background: #3b82f6; color: #fff; font-weight: 600; }
-        .sidebar-nav .nav-link .bi { font-size: 1rem; flex-shrink: 0; }
-        .sidebar-footer {
-            padding: 14px;
-            border-top: 1px solid #334155;
-        }
-        .sidebar-footer .user-name { color: #cbd5e1; font-size: .82rem; font-weight: 600; }
-        .sidebar-footer .user-role { color: #64748b; font-size: .72rem; }
-
-        /* ── Main ── */
-        .main-wrapper { margin-left: var(--sidebar-width); min-height: 100vh; display: flex; flex-direction: column; }
-        .topbar {
-            height: var(--topbar-height);
-            background: #fff;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            padding: 0 24px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            gap: 12px;
-        }
-        .topbar .page-title { font-weight: 700; font-size: 1rem; color: #0f172a; }
-        .topbar .breadcrumb { font-size: .78rem; margin: 0; }
-        .topbar .breadcrumb-item + .breadcrumb-item::before { color: #94a3b8; }
-        .page-content { padding: 24px; flex: 1; }
-
-        /* ── Cards ── */
-        .card { border: none; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.07); }
-        .card-header { background: transparent; border-bottom: 1px solid #f1f5f9; padding: 16px 20px; font-weight: 600; }
-        .stat-card { border-radius: 12px; border: none; overflow: hidden; }
-        .stat-card .icon-box {
-            width: 48px; height: 48px;
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.3rem;
-        }
-
-        /* ── Misc ── */
-        .badge { font-size: .72rem; font-weight: 600; border-radius: 6px; }
-        .table th { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: #64748b; border-bottom: 2px solid #f1f5f9; }
-        .table td { vertical-align: middle; font-size: .875rem; }
-        .btn-icon { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; }
-
-        /* ── Mobile ── */
-        @media (max-width: 991.98px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.show { transform: translateX(0); }
-            .main-wrapper { margin-left: 0; }
-            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 199; }
-            .sidebar-overlay.show { display: block; }
-        }
-    </style>
+    </script>
     @yield('styles')
 </head>
-<body>
+<body class="bg-cream font-sans min-h-screen">
 
-{{-- Overlay mobile --}}
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+    {{-- ══ HEADER ══ --}}
+    <header class="fixed top-0 left-0 right-0 z-40 bg-espresso border-b border-white/[0.07]">
+        <div class="h-[1px] w-full" style="background:linear-gradient(90deg,transparent,rgba(200,191,176,.25),transparent)"></div>
+        <div class="px-4 md:px-6 flex items-stretch h-[60px]">
 
-{{-- ══ SIDEBAR ══ --}}
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <div class="d-flex align-items-center gap-2">
-            <div style="width:34px;height:34px;background:#3b82f6;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-                <i class="bi bi-tools text-white" style="font-size:.9rem;"></i>
-            </div>
-            <div>
-                <div class="brand-name">PinjamAlat</div>
-                <div class="brand-sub">Sistem Peminjaman</div>
-            </div>
-        </div>
-    </div>
-
-    <nav class="sidebar-nav">
-        <div class="nav-section-label">Menu Utama</div>
-
-        <a href="{{ route('admin.dashboard') }}"
-           class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <i class="bi bi-speedometer2"></i> Dashboard
-        </a>
-
-        <a href="{{ route('admin.alat.index') }}"
-           class="nav-link {{ request()->routeIs('admin.alat.*') ? 'active' : '' }}">
-            <i class="bi bi-box-seam"></i> Manajemen Alat
-        </a>
-
-        <a href="{{ route('admin.pengembalian.index') }}"
-           class="nav-link {{ request()->routeIs('admin.pengembalian.*') ? 'active' : '' }}">
-            <i class="bi bi-arrow-return-left"></i> Pengembalian
-        </a>
-
-        <a href="{{ route('admin.history-kerusakan.index') }}"
-            class="nav-link {{ request()->routeIs('admin.history-kerusakan.*') ? 'active' : '' }}">
-                <i class="bi bi-tools"></i> History Kerusakan
-                @php $menunggu = \App\Models\HistoryKerusakan::where('status_tindak_lanjut','menunggu')->count(); @endphp
-                @if($menunggu > 0)
-                    <span class="badge bg-danger ms-auto">{{ $menunggu }}</span>
-                @endif
-            </a>
-
-        <a href="{{ route('admin.peminjaman.index') }}"
-           class="nav-link {{ request()->routeIs('admin.peminjaman.*') ? 'active' : '' }}">
-            <i class="bi bi-clock-history"></i> Riwayat Pinjam
-        </a>
-
-        <div class="nav-section-label">Laporan & Sistem</div>
-
-        <a href="{{ route('admin.laporan.index') }}"
-           class="nav-link {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
-            <i class="bi bi-file-earmark-bar-graph"></i> Laporan
-        </a>
-
-        <a href="{{ route('admin.pengaturan.index') }}"
-           class="nav-link {{ request()->routeIs('admin.pengaturan.*') ? 'active' : '' }}">
-            <i class="bi bi-gear"></i> Pengaturan
-        </a>
-    </nav>
-
-    <div class="sidebar-footer">
-        <div class="d-flex align-items-center gap-2 mb-2">
-            <div style="width:30px;height:30px;background:#334155;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                <i class="bi bi-person-fill text-slate-300" style="color:#94a3b8;font-size:.85rem;"></i>
-            </div>
-            <div>
-                <div class="user-name">{{ auth()->user()->name }}</div>
-                <div class="user-role">Administrator</div>
-            </div>
-        </div>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="btn btn-sm btn-outline-danger w-100">
-                <i class="bi bi-box-arrow-right me-1"></i> Logout
+            {{-- Mobile toggle --}}
+            <button onclick="toggleSidebar()" class="md:hidden flex items-center justify-center w-10 flex-shrink-0">
+                <i class="fas fa-bars text-paper/70 text-sm"></i>
             </button>
-        </form>
-    </div>
-</aside>
 
-{{-- ══ MAIN WRAPPER ══ --}}
-<div class="main-wrapper">
+            {{-- Brand --}}
+            <div class="flex items-center gap-3 flex-shrink-0">
+                <div class="w-7 h-7 border border-white/20 flex items-center justify-center">
+                    <i class="fas fa-wrench text-paper text-[0.5rem]"></i>
+                </div>
+                <div class="hidden sm:block">
+                    <h1 class="font-serif text-paper text-[0.9rem] font-normal leading-none tracking-[0.15em] uppercase">
+                        Sistem Peminjaman
+                    </h1>
+                    <p class="font-sans text-[0.42rem] tracking-[0.38em] uppercase text-paper/35 mt-[3px]">
+                        Platform Manajemen
+                    </p>
+                </div>
+            </div>
 
-    {{-- Topbar --}}
-    <div class="topbar">
-        <button class="btn btn-sm btn-light d-lg-none me-1" id="sidebarToggle">
-            <i class="bi bi-list fs-5"></i>
-        </button>
-        <div class="flex-grow-1">
-            <div class="page-title">@yield('title', 'Dashboard')</div>
-            @hasSection('breadcrumb')
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-muted">Home</a></li>
-                    @yield('breadcrumb')
-                </ol>
+            <div class="flex-1"></div>
+
+            {{-- PWA Install --}}
+            <button id="btnInstall" style="display:none;"
+                class="hidden md:flex items-center gap-2 px-4 border-l border-white/[0.08]
+                       font-sans text-[0.52rem] tracking-[0.2em] uppercase text-paper/50
+                       hover:text-paper/80 transition-colors">
+                <i class="fas fa-download text-[0.55rem]"></i>
+                <span>Install App</span>
+            </button>
+
+            {{-- User --}}
+            <div class="flex items-center gap-3 px-4 border-l border-white/[0.08]">
+                <div class="relative">
+                    <div class="w-7 h-7 bg-white/[0.08] border border-white/15 flex items-center justify-content-center flex items-center justify-center">
+                        <i class="fas fa-user text-paper/70 text-[0.5rem]"></i>
+                    </div>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-[6px] h-[6px] bg-emerald-400 border border-espresso rounded-full"></span>
+                </div>
+                <div class="hidden sm:block">
+                    <p class="font-sans text-[0.7rem] font-semibold text-paper leading-none">
+                        {{ auth()->user()->name }}
+                    </p>
+                    <p class="font-sans text-[0.44rem] tracking-[0.22em] uppercase text-paper/40 mt-1">Admin</p>
+                </div>
+            </div>
+
+            {{-- Logout --}}
+            <div class="flex items-center pl-3">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                        class="flex items-center gap-2 border border-white/20 px-3 py-2
+                               font-sans text-[0.52rem] font-semibold tracking-[0.2em] uppercase text-paper/60
+                               hover:bg-white/[0.08] hover:text-paper hover:border-white/35
+                               transition-all duration-150 group">
+                        <i class="fas fa-right-from-bracket text-[0.55rem] group-hover:translate-x-0.5 transition-transform"></i>
+                        <span class="hidden sm:inline">Keluar</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    {{-- Mobile overlay --}}
+    <div id="sidebarBackdrop" class="hidden fixed inset-0 bg-black/50 z-20 md:hidden" onclick="toggleSidebar()"></div>
+
+    <div class="flex pt-[60px] min-h-[calc(100vh-60px)]">
+
+        {{-- ══ SIDEBAR ══ --}}
+        <aside id="sidebar"
+            class="fixed left-0 top-[60px] bottom-0 z-30 w-56 bg-espresso flex flex-col
+                   transition-transform duration-300 -translate-x-full md:translate-x-0">
+
+            <div class="absolute right-0 top-0 bottom-0 w-px bg-white/[0.06]"></div>
+
+            <nav class="flex-1 px-3 py-5 overflow-y-auto space-y-5">
+
+                {{-- Utama --}}
+                <div>
+                    <p class="px-3 mb-2 font-sans text-[0.42rem] font-semibold tracking-[0.35em] uppercase text-paper/25">Utama</p>
+                    <a href="{{ route('admin.dashboard') }}"
+                       class="relative flex items-center gap-3 px-3 py-2.5 transition-all duration-150
+                              {{ request()->routeIs('admin.dashboard') ? 'bg-white/[0.10] text-paper' : 'text-paper/45 hover:bg-white/[0.05] hover:text-paper/75' }}">
+                        @if(request()->routeIs('admin.dashboard'))
+                            <span class="absolute left-0 top-1 bottom-1 w-[2px] bg-rule rounded-r-full"></span>
+                        @endif
+                        <i class="fas fa-gauge-high text-[0.6rem] w-3.5 text-center {{ request()->routeIs('admin.dashboard') ? 'text-paper/80' : 'text-paper/30' }}"></i>
+                        <span class="font-sans text-[0.68rem] font-medium tracking-wide">Dashboard</span>
+                    </a>
+                </div>
+
+                {{-- Inventaris --}}
+                <div>
+                    <p class="px-3 mb-2 font-sans text-[0.42rem] font-semibold tracking-[0.35em] uppercase text-paper/25">Inventaris</p>
+                    @foreach([
+                        ['route' => 'admin.alat.index', 'label' => 'Alat', 'icon' => 'fa-wrench', 'match' => 'admin.alat.*'],
+                    ] as $item)
+                    <a href="{{ route($item['route']) }}"
+                       class="relative flex items-center gap-3 px-3 py-2.5 transition-all duration-150
+                              {{ request()->routeIs($item['match']) ? 'bg-white/[0.10] text-paper' : 'text-paper/45 hover:bg-white/[0.05] hover:text-paper/75' }}">
+                        @if(request()->routeIs($item['match']))
+                            <span class="absolute left-0 top-1 bottom-1 w-[2px] bg-rule rounded-r-full"></span>
+                        @endif
+                        <i class="fas {{ $item['icon'] }} text-[0.6rem] w-3.5 text-center {{ request()->routeIs($item['match']) ? 'text-paper/80' : 'text-paper/30' }}"></i>
+                        <span class="font-sans text-[0.68rem] font-medium tracking-wide">{{ $item['label'] }}</span>
+                    </a>
+                    @endforeach
+                </div>
+
+                {{-- Transaksi --}}
+                <div>
+                    <p class="px-3 mb-2 font-sans text-[0.42rem] font-semibold tracking-[0.35em] uppercase text-paper/25">Transaksi</p>
+                    @foreach([
+                        ['route' => 'admin.pengembalian.index', 'label' => 'Pengembalian', 'icon' => 'fa-rotate-left', 'match' => 'admin.pengembalian.*'],
+                        ['route' => 'admin.peminjaman.index',   'label' => 'Riwayat Pinjam','icon' => 'fa-clipboard-list','match' => 'admin.peminjaman.*'],
+                    ] as $item)
+                    <a href="{{ route($item['route']) }}"
+                       class="relative flex items-center gap-3 px-3 py-2.5 transition-all duration-150
+                              {{ request()->routeIs($item['match']) ? 'bg-white/[0.10] text-paper' : 'text-paper/45 hover:bg-white/[0.05] hover:text-paper/75' }}">
+                        @if(request()->routeIs($item['match']))
+                            <span class="absolute left-0 top-1 bottom-1 w-[2px] bg-rule rounded-r-full"></span>
+                        @endif
+                        <i class="fas {{ $item['icon'] }} text-[0.6rem] w-3.5 text-center {{ request()->routeIs($item['match']) ? 'text-paper/80' : 'text-paper/30' }}"></i>
+                        <span class="font-sans text-[0.68rem] font-medium tracking-wide">{{ $item['label'] }}</span>
+                    </a>
+                    @endforeach
+                </div>
+
+                {{-- Administrasi --}}
+                <div>
+                    <p class="px-3 mb-2 font-sans text-[0.42rem] font-semibold tracking-[0.35em] uppercase text-paper/25">Administrasi</p>
+                    @foreach([
+                        ['route' => 'admin.laporan.index',           'label' => 'Laporan',          'icon' => 'fa-chart-line',   'match' => 'admin.laporan.*'],
+                        ['route' => 'admin.history-kerusakan.index', 'label' => 'History Kerusakan','icon' => 'fa-triangle-exclamation','match' => 'admin.history-kerusakan.*'],
+                        ['route' => 'admin.pengaturan.index',        'label' => 'Pengaturan',       'icon' => 'fa-gear',         'match' => 'admin.pengaturan.*'],
+                    ] as $item)
+                    <a href="{{ route($item['route']) }}"
+                       class="relative flex items-center gap-3 px-3 py-2.5 transition-all duration-150
+                              {{ request()->routeIs($item['match']) ? 'bg-white/[0.10] text-paper' : 'text-paper/45 hover:bg-white/[0.05] hover:text-paper/75' }}">
+                        @if(request()->routeIs($item['match']))
+                            <span class="absolute left-0 top-1 bottom-1 w-[2px] bg-rule rounded-r-full"></span>
+                        @endif
+                        <i class="fas {{ $item['icon'] }} text-[0.6rem] w-3.5 text-center {{ request()->routeIs($item['match']) ? 'text-paper/80' : 'text-paper/30' }}"></i>
+                        <span class="font-sans text-[0.68rem] font-medium tracking-wide">{{ $item['label'] }}</span>
+                        @if($item['route'] === 'admin.history-kerusakan.index')
+                            @php $menunggu = \App\Models\HistoryKerusakan::where('status_tindak_lanjut','menunggu')->count(); @endphp
+                            @if($menunggu > 0)
+                                <span class="ml-auto bg-red-800/60 text-paper/80 text-[0.45rem] tracking-wider px-1.5 py-0.5">
+                                    {{ $menunggu }}
+                                </span>
+                            @endif
+                        @endif
+                    </a>
+                    @endforeach
+                </div>
+
             </nav>
-            @endif
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            @yield('topbar_actions')
-        </div>
+
+            <div class="border-t border-white/[0.08] px-6 py-4">
+                <p class="font-sans text-[0.42rem] tracking-[0.2em] uppercase text-paper/15">
+                    &copy; {{ date('Y') }} &nbsp;·&nbsp; Akses Terbatas
+                </p>
+            </div>
+        </aside>
+
+        {{-- ══ MAIN CONTENT ══ --}}
+        <main class="flex-1 w-full md:ml-56 overflow-y-auto">
+            <div class="p-5 md:p-8">
+
+                {{-- Flash Messages --}}
+                @if(session('success'))
+                <div class="mb-6 border-l-2 border-emerald-700 bg-paper px-4 py-3 flex items-start gap-3">
+                    <i class="fas fa-check text-emerald-700 text-[0.6rem] mt-0.5 flex-shrink-0"></i>
+                    <p class="font-sans text-[0.72rem] tracking-wide text-ink leading-relaxed">{{ session('success') }}</p>
+                    <button onclick="this.parentElement.remove()" class="ml-auto text-ghost hover:text-ink text-xs">✕</button>
+                </div>
+                @endif
+
+                @if(session('error'))
+                <div class="mb-6 border-l-2 border-red-800 bg-paper px-4 py-3 flex items-start gap-3">
+                    <i class="fas fa-xmark text-red-800 text-[0.6rem] mt-0.5 flex-shrink-0"></i>
+                    <p class="font-sans text-[0.72rem] tracking-wide text-ink leading-relaxed">{{ session('error') }}</p>
+                    <button onclick="this.parentElement.remove()" class="ml-auto text-ghost hover:text-ink text-xs">✕</button>
+                </div>
+                @endif
+
+                @if($errors->any())
+                <div class="mb-6 border-l-2 border-red-800 bg-paper px-4 py-3">
+                    <ul class="space-y-1">
+                        @foreach($errors->all() as $error)
+                        <li class="font-sans text-[0.72rem] tracking-wide text-red-900">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+
+                @yield('content')
+            </div>
+        </main>
     </div>
 
-    {{-- Page Content --}}
-    <div class="page-content">
-
-        {{-- Flash Messages --}}
-        @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
-            <i class="bi bi-check-circle-fill fs-5"></i>
-            <div>{{ session('success') }}</div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
-
-        @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
-            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
-            <div>{{ session('error') }}</div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
-
-        @if($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show mb-3">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            <strong>Terdapat kesalahan:</strong>
-            <ul class="mb-0 mt-1">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
-
-        @yield('content')
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Sidebar toggle mobile
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const toggle  = document.getElementById('sidebarToggle');
-
-    toggle?.addEventListener('click', () => {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-    });
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('show');
-        overlay.classList.remove('show');
-    });
-</script>
-
-{{-- Sebelum </body> di semua layout --}}
-<script>
-    // Register Service Worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker
-                .register('/sw.js')
-                .then(reg => {
-                    console.log('SW registered:', reg.scope);
-
-                    // Cek update SW
-                    reg.addEventListener('updatefound', () => {
-                        const newWorker = reg.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                // Ada versi baru — tampilkan notif update
-                                if (confirm('Versi baru tersedia! Muat ulang sekarang?')) {
-                                    window.location.reload();
-                                }
-                            }
-                        });
-                    });
-                })
-                .catch(err => console.log('SW failed:', err));
+    <script>
+        function toggleSidebar() {
+            const sidebar  = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+        document.querySelectorAll('#sidebar a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) toggleSidebar();
+            });
         });
-    }
-</script>
-@yield('scripts')
+
+        // PWA
+        let deferredPrompt = null;
+        const btnInstall = document.getElementById('btnInstall');
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (btnInstall) btnInstall.style.display = 'flex';
+        });
+        btnInstall?.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') btnInstall.style.display = 'none';
+            deferredPrompt = null;
+        });
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+    </script>
+    @yield('scripts')
 </body>
 </html>

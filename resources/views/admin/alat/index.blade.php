@@ -1,54 +1,75 @@
-{{-- resources/views/admin/alat/index.blade.php --}}
 @extends('layouts.app')
-
 @section('title', 'Manajemen Alat')
-
-@section('breadcrumb')
-    <li class="breadcrumb-item active">Alat</li>
-@endsection
-
-@section('topbar_actions')
-    <a href="{{ route('admin.alat.create') }}" class="btn btn-primary btn-sm">
-        <i class="bi bi-plus-lg me-1"></i> Tambah Alat
-    </a>
-    <a href="{{ route('admin.alat.qr-semua') }}" class="btn btn-outline-secondary btn-sm"
-       onclick="return confirm('Download QR semua alat?')">
-        <i class="bi bi-qr-code me-1"></i> Download Semua QR
-    </a>
-@endsection
 
 @section('content')
 
+{{-- Page Header --}}
+<div class="mb-8 flex items-end justify-between">
+    <div>
+        <p class="font-sans text-[0.55rem] font-semibold tracking-[0.35em] uppercase text-label mb-1">Inventaris</p>
+        <h1 class="font-serif text-ink text-3xl font-normal leading-none">Manajemen Alat</h1>
+        <div class="mt-3 h-px w-10 bg-rule"></div>
+    </div>
+    <div class="flex items-center gap-3">
+        <a href="{{ route('admin.alat.create') }}"
+           class="flex items-center gap-2 bg-espresso text-paper px-4 py-2.5
+                  font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                  hover:bg-ink transition-colors">
+            <i class="fas fa-plus text-[0.5rem]"></i> Tambah Alat
+        </a>
+        <a href="{{ route('admin.alat.qr-semua') }}"
+           class="flex items-center gap-2 border border-rule text-label px-4 py-2.5
+                  font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                  hover:bg-sand transition-colors"
+           onclick="return confirm('Download QR semua alat?')">
+            <i class="fas fa-qrcode text-[0.5rem]"></i> Semua QR
+        </a>
+    </div>
+</div>
+
 {{-- Filter --}}
-<div class="card mb-3">
-    <div class="card-body py-3">
-        <form method="GET" class="row g-2 align-items-end">
-            <div class="col-md-4">
-                <input type="text" name="search" class="form-control form-control-sm"
-                       placeholder="Cari nama atau kode alat..."
-                       value="{{ request('search') }}">
+<div class="bg-paper border border-rule mb-5">
+    <div class="px-5 py-4 border-b border-rule/60">
+        <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Filter & Pencarian</p>
+    </div>
+    <div class="px-5 py-4">
+        <form method="GET" class="flex flex-wrap gap-3 items-end">
+            <div class="flex-1 min-w-[180px]">
+                <label class="block font-sans text-[0.5rem] tracking-[0.2em] uppercase text-ghost mb-2">Cari</label>
+                <input type="text" name="search"
+                       value="{{ request('search') }}"
+                       placeholder="Nama atau kode alat..."
+                       class="w-full border-b border-rule bg-transparent pb-2 pt-1 font-sans text-[0.82rem] text-ink outline-none focus:border-ink placeholder-ghost">
             </div>
-            <div class="col-md-2">
-                <select name="status" class="form-select form-select-sm">
-                    <option value="">Semua Status</option>
+            <div class="min-w-[130px]">
+                <label class="block font-sans text-[0.5rem] tracking-[0.2em] uppercase text-ghost mb-2">Status</label>
+                <select name="status" class="w-full border-b border-rule bg-transparent pb-2 pt-1 font-sans text-[0.82rem] text-ink outline-none focus:border-ink">
+                    <option value="">Semua</option>
                     <option value="tersedia" {{ request('status') === 'tersedia' ? 'selected' : '' }}>Tersedia</option>
-                    <option value="dipinjam" {{ request('status') === 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
+                    <option value="dipinjam" {{ request('status') === 'dipinjam'  ? 'selected' : '' }}>Dipinjam</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <select name="kondisi" class="form-select form-select-sm">
-                    <option value="">Semua Kondisi</option>
-                    <option value="baik" {{ request('kondisi') === 'baik' ? 'selected' : '' }}>Baik</option>
-                    <option value="rusak_ringan" {{ request('kondisi') === 'rusak_ringan' ? 'selected' : '' }}>Rusak Ringan</option>
-                    <option value="rusak_berat" {{ request('kondisi') === 'rusak_berat' ? 'selected' : '' }}>Rusak Berat</option>
+            <div class="min-w-[130px]">
+                <label class="block font-sans text-[0.5rem] tracking-[0.2em] uppercase text-ghost mb-2">Kondisi</label>
+                <select name="kondisi" class="w-full border-b border-rule bg-transparent pb-2 pt-1 font-sans text-[0.82rem] text-ink outline-none focus:border-ink">
+                    <option value="">Semua</option>
+                    <option value="baik"        {{ request('kondisi') === 'baik'        ? 'selected' : '' }}>Baik</option>
+                    <option value="rusak_ringan" {{ request('kondisi') === 'rusak_ringan'? 'selected' : '' }}>Rusak Ringan</option>
+                    <option value="rusak_berat"  {{ request('kondisi') === 'rusak_berat' ? 'selected' : '' }}>Rusak Berat</option>
                 </select>
             </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary btn-sm">
-                    <i class="bi bi-search me-1"></i>Cari
+            <div class="flex gap-2">
+                <button type="submit"
+                    class="flex items-center gap-1.5 bg-espresso text-paper px-4 py-2.5
+                           font-sans text-[0.55rem] font-semibold tracking-[0.2em] uppercase hover:bg-ink transition-colors">
+                    <i class="fas fa-search text-[0.5rem]"></i> Cari
                 </button>
                 @if(request()->hasAny(['search','status','kondisi']))
-                <a href="{{ route('admin.alat.index') }}" class="btn btn-light btn-sm">Reset</a>
+                <a href="{{ route('admin.alat.index') }}"
+                   class="flex items-center gap-1.5 border border-rule text-label px-4 py-2.5
+                          font-sans text-[0.55rem] font-semibold tracking-[0.2em] uppercase hover:bg-sand transition-colors">
+                    Reset
+                </a>
                 @endif
             </div>
         </form>
@@ -56,89 +77,103 @@
 </div>
 
 {{-- Tabel --}}
-<div class="card">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width:50px;">#</th>
-                        <th>Alat</th>
-                        <th>Kode</th>
-                        <th>Kondisi</th>
-                        <th>Status</th>
-                        <th>Harga</th>
-                        <th class="text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($alat as $item)
-                    <tr>
-                        <td class="text-muted small">{{ $alat->firstItem() + $loop->index }}</td>
-                        <td>
-                            <div class="fw-semibold">{{ $item->nama_alat }}</div>
-                            @if($item->kategori)
-                                <small class="text-muted">{{ $item->kategori }}</small>
-                            @endif
-                        </td>
-                        <td><code class="small">{{ $item->kode_alat }}</code></td>
-                        <td>
-                            @php
-                                $kondisiLabel = ['baik'=>'Baik','rusak_ringan'=>'Rusak Ringan','rusak_berat'=>'Rusak Berat','tidak_tersedia'=>'Tidak Tersedia'];
-                                $kondisiBadge = ['baik'=>'success','rusak_ringan'=>'warning','rusak_berat'=>'danger','tidak_tersedia'=>'secondary'];
-                            @endphp
-                            <span class="badge bg-{{ $kondisiBadge[$item->kondisi] ?? 'secondary' }}">
-                                {{ $kondisiLabel[$item->kondisi] ?? $item->kondisi }}
-                            </span>
-                        </td>
-                        <td>
-                            @if($item->status === 'dipinjam')
-                                <span class="badge bg-warning text-dark">Dipinjam</span>
-                            @else
-                                <span class="badge bg-success">Tersedia</span>
-                            @endif
-                        </td>
-                        <td>Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                        <td class="text-center">
-                            <div class="d-flex gap-1 justify-content-center">
-                                <a href="{{ route('admin.alat.qr-pdf', $item->id) }}"
-                                   class="btn btn-icon btn-light border" title="Download QR">
-                                    <i class="bi bi-qr-code small"></i>
-                                </a>
-                                <a href="{{ route('admin.alat.edit', $item->id) }}"
-                                   class="btn btn-icon btn-light border" title="Edit">
-                                    <i class="bi bi-pencil small"></i>
-                                </a>
-                                <form method="POST" action="{{ route('admin.alat.destroy', $item->id) }}"
-                                      onsubmit="return confirm('Yakin hapus alat ini?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit"
-                                            class="btn btn-icon btn-light border text-danger"
-                                            title="Hapus"
-                                            {{ $item->sedangDipinjam() ? 'disabled' : '' }}>
-                                        <i class="bi bi-trash small"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-5 text-muted">
-                            <i class="bi bi-inbox fs-1 d-block mb-2 opacity-25"></i>
-                            Belum ada data alat.
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        @if($alat->hasPages())
-        <div class="p-3 border-top">
-            {{ $alat->links() }}
-        </div>
-        @endif
+<div class="bg-paper border border-rule">
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead>
+                <tr>
+                    <th class="font-sans text-[0.48rem] font-semibold tracking-[0.2em] uppercase text-label py-3.5 px-5 text-left border-b border-rule bg-cream">#</th>
+                    <th class="font-sans text-[0.48rem] font-semibold tracking-[0.2em] uppercase text-label py-3.5 px-5 text-left border-b border-rule bg-cream">Alat</th>
+                    <th class="font-sans text-[0.48rem] font-semibold tracking-[0.2em] uppercase text-label py-3.5 px-5 text-left border-b border-rule bg-cream">Kode</th>
+                    <th class="font-sans text-[0.48rem] font-semibold tracking-[0.2em] uppercase text-label py-3.5 px-5 text-left border-b border-rule bg-cream">Kondisi</th>
+                    <th class="font-sans text-[0.48rem] font-semibold tracking-[0.2em] uppercase text-label py-3.5 px-5 text-left border-b border-rule bg-cream">Status</th>
+                    <th class="font-sans text-[0.48rem] font-semibold tracking-[0.2em] uppercase text-label py-3.5 px-5 text-left border-b border-rule bg-cream">Harga</th>
+                    <th class="font-sans text-[0.48rem] font-semibold tracking-[0.2em] uppercase text-label py-3.5 px-5 text-center border-b border-rule bg-cream">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($alat as $item)
+                <tr class="group hover:bg-cream/50 transition-colors">
+                    <td class="font-sans text-[0.68rem] text-ghost py-4 px-5 border-b border-rule/40">
+                        {{ $alat->firstItem() + $loop->index }}
+                    </td>
+                    <td class="py-4 px-5 border-b border-rule/40">
+                        <p class="font-serif text-ink text-[0.95rem] font-normal leading-tight">{{ $item->nama_alat }}</p>
+                        @if($item->kategori)
+                            <p class="font-sans text-[0.58rem] tracking-wide text-ghost mt-0.5">{{ $item->kategori }}</p>
+                        @endif
+                    </td>
+                    <td class="py-4 px-5 border-b border-rule/40">
+                        <code class="font-mono text-[0.72rem] text-dim bg-cream px-1.5 py-0.5">{{ $item->kode_alat }}</code>
+                    </td>
+                    <td class="py-4 px-5 border-b border-rule/40">
+                        @php
+                            $kondisiMap = [
+                                'baik'          => ['label' => 'Baik',          'class' => 'bg-emerald-50 text-emerald-800 border-emerald-200'],
+                                'rusak_ringan'  => ['label' => 'Rusak Ringan',  'class' => 'bg-amber-50 text-amber-800 border-amber-200'],
+                                'rusak_berat'   => ['label' => 'Rusak Berat',   'class' => 'bg-red-50 text-red-800 border-red-200'],
+                                'tidak_tersedia'=> ['label' => 'Tidak Tersedia','class' => 'bg-sand text-dim border-rule'],
+                            ];
+                            $k = $kondisiMap[$item->kondisi] ?? ['label' => $item->kondisi, 'class' => 'bg-sand text-dim border-rule'];
+                        @endphp
+                        <span class="font-sans text-[0.48rem] tracking-[0.12em] uppercase px-2 py-0.5 border {{ $k['class'] }}">
+                            {{ $k['label'] }}
+                        </span>
+                    </td>
+                    <td class="py-4 px-5 border-b border-rule/40">
+                        @if($item->status === 'dipinjam')
+                            <span class="font-sans text-[0.48rem] tracking-[0.12em] uppercase px-2 py-0.5 border bg-amber-50 text-amber-800 border-amber-200">Dipinjam</span>
+                        @else
+                            <span class="font-sans text-[0.48rem] tracking-[0.12em] uppercase px-2 py-0.5 border bg-emerald-50 text-emerald-800 border-emerald-200">Tersedia</span>
+                        @endif
+                    </td>
+                    <td class="font-sans text-[0.78rem] text-dim py-4 px-5 border-b border-rule/40">
+                        Rp {{ number_format($item->harga, 0, ',', '.') }}
+                    </td>
+                    <td class="py-4 px-5 border-b border-rule/40">
+                        <div class="flex items-center justify-center gap-2">
+                            <a href="{{ route('admin.alat.qr-pdf', $item->id) }}"
+                               class="w-7 h-7 border border-rule flex items-center justify-center text-ghost hover:bg-espresso hover:text-paper hover:border-espresso transition-all"
+                               title="Download QR">
+                                <i class="fas fa-qrcode text-[0.5rem]"></i>
+                            </a>
+                            <a href="{{ route('admin.alat.edit', $item->id) }}"
+                               class="w-7 h-7 border border-rule flex items-center justify-center text-ghost hover:bg-espresso hover:text-paper hover:border-espresso transition-all"
+                               title="Edit">
+                                <i class="fas fa-pen text-[0.5rem]"></i>
+                            </a>
+                            <form method="POST" action="{{ route('admin.alat.destroy', $item->id) }}"
+                                  onsubmit="return confirm('Yakin hapus alat ini?')">
+                                @csrf @method('DELETE')
+                                <button type="submit"
+                                        class="w-7 h-7 border border-rule flex items-center justify-center text-ghost hover:bg-red-900 hover:text-paper hover:border-red-900 transition-all disabled:opacity-40"
+                                        title="Hapus"
+                                        {{ $item->sedangDipinjam() ? 'disabled' : '' }}>
+                                    <i class="fas fa-trash text-[0.5rem]"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="py-16 text-center">
+                        <i class="fas fa-inbox text-rule text-3xl block mb-3"></i>
+                        <p class="font-sans text-[0.65rem] tracking-[0.2em] uppercase text-ghost">Belum ada data alat</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
+    @if($alat->hasPages())
+    <div class="px-5 py-4 border-t border-rule/60 flex items-center justify-between">
+        <p class="font-sans text-[0.6rem] tracking-wide text-ghost">
+            Menampilkan {{ $alat->firstItem() }}–{{ $alat->lastItem() }} dari {{ $alat->total() }} data
+        </p>
+        {{ $alat->links() }}
+    </div>
+    @endif
 </div>
 
 @endsection

@@ -5,611 +5,351 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Peminjaman Alat</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-{{-- PWA Meta Tags --}}
-<meta name="theme-color" content="#3b82f6">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="PinjamAlat">
-<meta name="msapplication-TileColor" content="#3b82f6">
-<meta name="msapplication-TileImage" content="/icons/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-{{-- Web Manifest --}}
-<link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1c1917">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PinjamAlat">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" href="/icons/icon-192.png">
 
-{{-- Apple Touch Icon --}}
-<link rel="apple-touch-icon" href="/icons/icon-192.png">
-
-{{-- Favicon --}}
-<link rel="icon" type="image/png" href="/icons/icon-192.png">
-
-    <style>
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: #f0f4ff;
-            font-family: 'Segoe UI', sans-serif;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans:  ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        espresso: '#1c1917', ink: '#1a1714', dim: '#4a4540',
+                        label: '#6e665e', rule: '#c8bfb0', ghost: '#a89f94',
+                        paper: '#fffdf9', cream: '#f5f0e8', sand: '#e8e0d0',
+                    },
+                    animation: { 'fade-up': 'fadeUp 0.65s ease both' },
+                    keyframes: {
+                        fadeUp: {
+                            '0%':   { opacity: '0', transform: 'translateY(16px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                }
+            }
         }
-
-        /* ── Tombol Login Admin ── */
-        .btn-admin-login {
-            position: fixed;
-            top: 16px; right: 16px;
-            z-index: 9999;
-            font-size: .82rem;
-            padding: 8px 18px;
-            border-radius: 20px;
-            background: #1e293b;
-            border: none;
-            color: #fff;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            box-shadow: 0 4px 14px rgba(0,0,0,.2);
-            transition: all .2s;
-        }
-        .btn-admin-login:hover {
-            background: #3b82f6;
-            color: #fff;
-            transform: translateY(-1px);
-        }
-
-        /* ── Hero ── */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 20px 40px;
-            text-align: center;
-        }
-
-        .hero-icon {
-            width: 88px; height: 88px;
-            background: linear-gradient(135deg, #3b82f6, #6366f1);
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 28px;
-            box-shadow: 0 12px 32px rgba(99,102,241,.3);
-        }
-
-        .hero-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 10px;
-        }
-
-        .hero-subtitle {
-            font-size: 1rem;
-            color: #64748b;
-            max-width: 400px;
-            margin: 0 auto 36px;
-            line-height: 1.6;
-        }
-
-        /* ── Tombol Scan Utama ── */
-        .btn-scan-utama {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: linear-gradient(135deg, #3b82f6, #6366f1);
-            color: #fff;
-            font-size: 1.05rem;
-            font-weight: 700;
-            padding: 14px 36px;
-            border-radius: 50px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(99,102,241,.35);
-            transition: all .2s;
-            margin-bottom: 12px;
-            text-decoration: none;
-        }
-        .btn-scan-utama:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(99,102,241,.45);
-            color: #fff;
-        }
-        .btn-scan-utama:active {
-            transform: scale(.97);
-        }
-
-        .scan-note {
-            font-size: .78rem;
-            color: #94a3b8;
-            margin-bottom: 48px;
-        }
-
-        /* ── Steps ── */
-        .steps {
-            display: flex;
-            gap: 14px;
-            justify-content: center;
-            flex-wrap: wrap;
-            max-width: 680px;
-            margin: 0 auto 40px;
-        }
-
-        .step-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 22px 18px;
-            width: 148px;
-            box-shadow: 0 2px 12px rgba(0,0,0,.06);
-            border: 1.5px solid #e2e8f0;
-            transition: transform .2s;
-        }
-        .step-card:hover { transform: translateY(-3px); }
-
-        .step-number {
-            width: 28px; height: 28px;
-            background: linear-gradient(135deg, #3b82f6, #6366f1);
-            color: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: .75rem;
-            font-weight: 700;
-            margin: 0 auto 10px;
-        }
-
-        .step-icon { font-size: 1.6rem; display: block; margin-bottom: 8px; }
-        .step-title { font-size: .82rem; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
-        .step-desc { font-size: .73rem; color: #94a3b8; line-height: 1.5; }
-
-        /* ── Info Box ── */
-        .info-box {
-            background: #fff;
-            border-radius: 14px;
-            padding: 16px 24px;
-            max-width: 460px;
-            margin: 0 auto 32px;
-            border: 1.5px solid #e0e7ff;
-            font-size: .83rem;
-            color: #64748b;
-            line-height: 1.6;
-        }
-
-        /* ── QR Scanner Modal ── */
-        .scanner-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.85);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        .scanner-overlay.show { display: flex; }
-
-        .scanner-box {
-            background: #fff;
-            border-radius: 20px;
-            padding: 28px 24px 20px;
-            width: 340px;
-            max-width: 92vw;
-            text-align: center;
-        }
-
-        .scanner-box h5 {
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 4px;
-            font-size: 1rem;
-        }
-
-        .scanner-box p {
-            font-size: .8rem;
-            color: #94a3b8;
-            margin-bottom: 16px;
-        }
-
-        #qr-video-container {
-            width: 100%;
-            border-radius: 12px;
-            overflow: hidden;
-            background: #000;
-            margin-bottom: 14px;
-            position: relative;
-        }
-
-        #qr-video-container video {
-            width: 100%;
-            display: block;
-        }
-
-        /* Garis scanner animasi */
-        .scan-line {
-            position: absolute;
-            left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-            animation: scanMove 2s linear infinite;
-            top: 0;
-        }
-        @keyframes scanMove {
-            0%   { top: 10%; }
-            50%  { top: 85%; }
-            100% { top: 10%; }
-        }
-
-        /* Sudut scanner */
-        .scan-corners {
-            position: absolute;
-            inset: 10%;
-            border: none;
-            pointer-events: none;
-        }
-        .scan-corners::before,
-        .scan-corners::after,
-        .corner-br::before,
-        .corner-br::after {
-            content: '';
-            position: absolute;
-            width: 24px; height: 24px;
-            border-color: #3b82f6;
-            border-style: solid;
-        }
-        .scan-corners::before { top: 0; left: 0; border-width: 3px 0 0 3px; border-radius: 3px 0 0 0; }
-        .scan-corners::after  { top: 0; right: 0; border-width: 3px 3px 0 0; border-radius: 0 3px 0 0; }
-        .corner-br::before { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-radius: 0 0 0 3px; }
-        .corner-br::after  { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 3px 0; }
-
-        #scan-status {
-            font-size: .8rem;
-            min-height: 24px;
-            margin-bottom: 8px;
-        }
-
-        .btn-tutup-scanner {
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            background: #f1f5f9;
-            border: none;
-            color: #475569;
-            font-weight: 600;
-            font-size: .875rem;
-            cursor: pointer;
-            transition: background .2s;
-        }
-        .btn-tutup-scanner:hover { background: #e2e8f0; }
-
-        .footer-note {
-            font-size: .73rem;
-            color: #94a3b8;
-        }
-
-        @media (max-width: 480px) {
-            .hero-title { font-size: 1.6rem; }
-            .step-card { width: 138px; padding: 18px 12px; }
-            .btn-scan-utama { font-size: .95rem; padding: 13px 28px; }
-        }
-    </style>
+    </script>
 </head>
-<body>
+<body class="font-sans bg-cream min-h-screen">
 
-    {{-- ── Tombol Login Admin ── --}}
-    <a href="{{ route('login') }}" class="btn-admin-login">
-        <i class="bi bi-shield-lock-fill"></i> Petugas / Admin
+    {{-- ══ TOMBOL LOGIN ADMIN ══ --}}
+    <a href="{{ route('login') }}"
+       class="fixed top-5 right-5 z-50 flex items-center gap-2
+              bg-espresso border border-espresso px-4 py-2
+              font-sans text-[0.55rem] font-semibold tracking-[0.22em] uppercase text-paper
+              hover:bg-ink transition-all duration-200">
+        <i class="fas fa-shield-halved text-[0.6rem]"></i>
+        <span>Petugas / Admin</span>
     </a>
 
-    {{-- ── Hero ── --}}
-    <div class="hero">
+    {{-- ══ INSTALL PWA BANNER ══ --}}
+    <div id="installBanner"
+         class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50
+                bg-espresso border border-white/10 px-5 py-3
+                flex items-center gap-4 shadow-xl">
+        <i class="fas fa-download text-paper/60 text-[0.65rem]"></i>
+        <span class="font-sans text-[0.6rem] tracking-[0.15em] uppercase text-paper/80">Install Aplikasi</span>
+        <button id="btnInstall"
+                class="bg-paper text-espresso px-4 py-1.5
+                       font-sans text-[0.55rem] font-semibold tracking-[0.15em] uppercase
+                       hover:bg-cream transition-colors">
+            Install
+        </button>
+        <button id="btnTutupInstall"
+                class="text-paper/30 hover:text-paper transition-colors text-sm ml-1">✕</button>
+    </div>
 
-        <div class="hero-icon">
-            <i class="bi bi-tools text-white" style="font-size:2.2rem;"></i>
+    {{-- ══ HERO ══ --}}
+    <div class="min-h-screen flex flex-col items-center justify-center px-5 py-24 text-center">
+
+        {{-- Brand mark --}}
+        <div class="mb-10 relative">
+            <div class="w-16 h-16 bg-espresso flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-wrench text-paper text-xl"></i>
+            </div>
+            <div class="absolute -top-2 -right-2 w-5 h-5 border border-rule"></div>
         </div>
 
-        <h1 class="hero-title">Sistem Peminjaman Alat</h1>
-        <p class="hero-subtitle">
+        {{-- Heading --}}
+        <p class="font-sans text-[0.58rem] font-semibold tracking-[0.38em] uppercase text-label mb-4">
+            Sistem Digital
+        </p>
+        <h1 class="font-serif text-ink text-4xl md:text-5xl font-normal leading-tight mb-4 max-w-sm">
+            Peminjaman<br>Alat Sekolah
+        </h1>
+        <div class="h-px w-12 bg-rule mx-auto mb-6"></div>
+        <p class="font-sans text-[0.75rem] text-label leading-relaxed max-w-xs mb-12">
             Pinjam alat dengan mudah dan cepat.<br>
             Cukup scan QR Code yang ada pada alat.
         </p>
 
-        {{-- ── TOMBOL SCAN UTAMA ── --}}
-        <button class="btn-scan-utama" onclick="bukaScanner()">
-            <i class="bi bi-qr-code-scan" style="font-size:1.3rem;"></i>
+        {{-- CTA Utama --}}
+        <button id="btnScanUtama"
+            class="relative overflow-hidden flex items-center gap-3 bg-espresso text-paper
+                   px-8 py-4 mb-3
+                   font-sans text-[0.65rem] font-semibold tracking-[0.3em] uppercase
+                   hover:bg-ink transition-colors duration-200 active:scale-[0.99]
+                   after:content-[''] after:absolute after:inset-0 after:bg-white/[0.06]
+                   after:-translate-x-full after:transition-transform after:duration-[350ms]
+                   hover:after:translate-x-0">
+            <i class="fas fa-qrcode text-[0.85rem]"></i>
             Scan QR untuk Meminjam
         </button>
-        <p class="scan-note">
-            <i class="bi bi-info-circle me-1"></i>
-            Jika kamera HP bisa scan langsung, arahkan ke QR pada alat
+        <p class="font-sans text-[0.58rem] tracking-[0.12em] text-ghost mb-16">
+            <i class="fas fa-info-circle mr-1 text-[0.5rem]"></i>
+            Atau arahkan kamera HP langsung ke QR pada alat
         </p>
 
         {{-- Steps --}}
-        <div class="steps">
-            <div class="step-card">
-                <div class="step-number">1</div>
-                <span class="step-icon">📱</span>
-                <div class="step-title">Scan QR</div>
-                <div class="step-desc">Tap tombol scan di atas atau kamera HP</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl w-full mb-14">
+            @php
+                $steps = [
+                    ['no'=>'1','icon'=>'fa-qrcode',         'title'=>'Scan QR',     'desc'=>'Tap tombol scan atau kamera HP'],
+                    ['no'=>'2','icon'=>'fa-pen-to-square',  'title'=>'Isi Form',    'desc'=>'Isi nama, kelas, mata pelajaran'],
+                    ['no'=>'3','icon'=>'fa-circle-check',   'title'=>'Selesai',     'desc'=>'Peminjaman tercatat otomatis'],
+                    ['no'=>'4','icon'=>'fa-rotate-left',    'title'=>'Kembalikan',  'desc'=>'Serahkan ke petugas untuk scan balik'],
+                ];
+            @endphp
+            @foreach($steps as $s)
+            <div class="bg-paper border border-rule p-5 text-left group hover:border-espresso/30 transition-colors">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="w-5 h-5 bg-espresso text-paper flex items-center justify-center
+                                 font-sans text-[0.45rem] font-semibold flex-shrink-0">{{ $s['no'] }}</span>
+                    <i class="fas {{ $s['icon'] }} text-ghost text-[0.7rem]"></i>
+                </div>
+                <p class="font-sans text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-ink mb-1.5">{{ $s['title'] }}</p>
+                <p class="font-sans text-[0.6rem] leading-relaxed text-label">{{ $s['desc'] }}</p>
+                <div class="mt-4 h-px w-0 bg-espresso/20 group-hover:w-full transition-all duration-500"></div>
             </div>
-            <div class="step-card">
-                <div class="step-number">2</div>
-                <span class="step-icon">📝</span>
-                <div class="step-title">Isi Form</div>
-                <div class="step-desc">Isi nama, kelas, dan mata pelajaran</div>
-            </div>
-            <div class="step-card">
-                <div class="step-number">3</div>
-                <span class="step-icon">✅</span>
-                <div class="step-title">Selesai</div>
-                <div class="step-desc">Peminjaman tercatat otomatis</div>
-            </div>
-            <div class="step-card">
-                <div class="step-number">4</div>
-                <span class="step-icon">🔁</span>
-                <div class="step-title">Kembalikan</div>
-                <div class="step-desc">Serahkan ke petugas untuk scan balik</div>
-            </div>
+            @endforeach
         </div>
 
-        <div class="info-box">
-            <i class="bi bi-lightbulb-fill me-2 text-warning"></i>
-            <strong>Tips:</strong> Kamera HP modern bisa scan QR langsung tanpa aplikasi tambahan.
-            Jika tidak bisa, gunakan tombol <strong>"Scan QR"</strong> di atas.
+        {{-- Info Tips --}}
+        <div class="bg-paper border border-rule px-6 py-4 max-w-md w-full text-left">
+            <p class="font-sans text-[0.65rem] text-dim leading-relaxed">
+                <i class="fas fa-lightbulb text-ghost mr-2 text-[0.58rem]"></i>
+                <span class="font-semibold text-ink">Tips:</span>
+                Kamera HP modern bisa scan QR langsung. Jika tidak bisa, gunakan tombol
+                <span class="font-semibold text-ink">Scan QR</span> di atas.
+            </p>
         </div>
 
-        <p class="footer-note">
-            Sistem Peminjaman Alat &mdash;
-            {{ \App\Models\Pengaturan::ambil('nama_sekolah', 'Sekolah') }}
+        <p class="mt-10 font-sans text-[0.5rem] tracking-[0.15em] uppercase text-ghost/50">
+            {{ \App\Models\Pengaturan::ambil('nama_sekolah', 'Sistem Peminjaman') }}
         </p>
 
     </div>
 
-    {{-- ══════════════════════════════════════
-         QR SCANNER OVERLAY (Modal fullscreen)
-    ══════════════════════════════════════ --}}
-    <div class="scanner-overlay" id="scannerOverlay">
-        <div class="scanner-box">
-            <h5><i class="bi bi-qr-code-scan me-2 text-primary"></i>Scan QR Alat</h5>
-            <p>Arahkan kamera ke QR Code yang ada pada alat</p>
+    {{-- ══ SCANNER OVERLAY ══ --}}
+    <div id="scannerOverlay"
+         class="hidden fixed inset-0 z-[100] bg-black/85 flex items-center justify-center p-4">
+        <div class="bg-paper border border-rule w-full max-w-sm">
 
-            <div id="qr-video-container">
-                <video id="qr-video" playsinline autoplay muted></video>
-                <div class="scan-line"></div>
-                <div class="scan-corners">
-                    <div class="corner-br"></div>
+            {{-- Header --}}
+            <div class="border-b border-rule px-5 py-4 flex items-center justify-between">
+                <div>
+                    <p class="font-sans text-[0.48rem] font-semibold tracking-[0.28em] uppercase text-label">Scanner</p>
+                    <h3 class="font-serif text-ink text-lg font-normal mt-0">Scan QR Alat</h3>
                 </div>
+                <button id="btnTutupScanner"
+                        class="w-7 h-7 border border-rule flex items-center justify-center
+                               text-ghost hover:bg-espresso hover:text-paper hover:border-espresso transition-all">
+                    <i class="fas fa-xmark text-[0.5rem]"></i>
+                </button>
             </div>
 
-            <div id="scan-status" class="text-muted"></div>
+            {{-- Video area --}}
+            <div class="px-5 py-5">
+                <div class="relative bg-black overflow-hidden border border-rule mb-4" style="aspect-ratio:1">
+                    <video id="qrVideo" playsinline autoplay muted class="w-full h-full object-cover"></video>
 
-            <button class="btn-tutup-scanner" onclick="tutupScanner()">
-                <i class="bi bi-x-circle me-1"></i> Tutup
-            </button>
+                    {{-- Scan frame corners --}}
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div class="relative w-48 h-48">
+                            <span class="absolute top-0 left-0 w-7 h-7 border-t-2 border-l-2 border-paper"></span>
+                            <span class="absolute top-0 right-0 w-7 h-7 border-t-2 border-r-2 border-paper"></span>
+                            <span class="absolute bottom-0 left-0 w-7 h-7 border-b-2 border-l-2 border-paper"></span>
+                            <span class="absolute bottom-0 right-0 w-7 h-7 border-b-2 border-r-2 border-paper"></span>
+                            {{-- Scan line --}}
+                            <div id="scanLine"
+                                 class="absolute left-0 right-0 h-px bg-white/60"
+                                 style="top:0;animation:scanMove 2s linear infinite;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <p id="scanStatus" class="font-sans text-[0.62rem] tracking-wide text-label text-center min-h-5 mb-4"></p>
+
+                <button id="btnTutupScanner2"
+                        class="w-full flex items-center justify-center gap-2 border border-rule text-label py-3
+                               font-sans text-[0.6rem] font-semibold tracking-[0.22em] uppercase
+                               hover:bg-sand transition-colors">
+                    <i class="fas fa-xmark text-[0.5rem]"></i> Tutup
+                </button>
+            </div>
+
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    {{-- Library scan QR pakai jsQR (murni JS, no dependency) --}}
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <style>
+        @keyframes scanMove {
+            0%   { top: 5%; }
+            50%  { top: 90%; }
+            100% { top: 5%; }
+        }
+    </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script>
+        // ── PWA Install ──
+        let deferredPrompt = null;
+        const installBanner  = document.getElementById('installBanner');
+        const btnInstall     = document.getElementById('btnInstall');
+        const btnTutupInstall = document.getElementById('btnTutupInstall');
+
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBanner.classList.remove('hidden');
+            installBanner.classList.add('flex');
+        });
+
+        btnInstall?.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                installBanner.classList.add('hidden');
+            }
+            deferredPrompt = null;
+        });
+
+        btnTutupInstall?.addEventListener('click', () => {
+            installBanner.classList.add('hidden');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installBanner.classList.add('hidden');
+        });
+
+        // ── QR Scanner ──
         let stream       = null;
         let scanInterval = null;
         let sudahScan    = false;
 
         const overlay    = document.getElementById('scannerOverlay');
-        const video      = document.getElementById('qr-video');
-        const statusEl   = document.getElementById('scan-status');
+        const video      = document.getElementById('qrVideo');
+        const statusEl   = document.getElementById('scanStatus');
 
-        // ── Buka Scanner ──
-        async function bukaScanner() {
+        function bukaScanner() {
             sudahScan = false;
-            overlay.classList.add('show');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
             statusEl.textContent = '';
 
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: 'environment', // Kamera belakang
-                        width:  { ideal: 1280 },
-                        height: { ideal: 720 },
-                    }
-                });
-
-                video.srcObject = stream;
-                await video.play();
+            navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+            }).then(s => {
+                stream = s;
+                video.srcObject = s;
+                video.play();
                 mulaiScan();
-
-            } catch (err) {
-                statusEl.innerHTML = `
-                    <span class="text-danger">
-                        <i class="bi bi-exclamation-triangle me-1"></i>
-                        Kamera tidak dapat diakses.<br>
-                        <small>Pastikan izin kamera sudah diberikan.</small>
-                    </span>`;
-            }
+            }).catch(() => {
+                statusEl.textContent = '⚠ Kamera tidak dapat diakses. Pastikan izin kamera sudah diberikan.';
+            });
         }
 
-        // ── Mulai proses scan frame demi frame ──
         function mulaiScan() {
             const canvas  = document.createElement('canvas');
-            const context = canvas.getContext('2d');
+            const ctx     = canvas.getContext('2d');
 
             scanInterval = setInterval(() => {
                 if (sudahScan || video.readyState !== video.HAVE_ENOUGH_DATA) return;
 
                 canvas.width  = video.videoWidth;
                 canvas.height = video.videoHeight;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const result    = jsQR(imageData.data, imageData.width, imageData.height, {
                     inversionAttempts: 'dontInvert',
                 });
 
                 if (result) {
                     sudahScan = true;
-                    prosesHasilScan(result.data);
+                    prosesHasil(result.data);
                 }
-            }, 200); // Scan tiap 200ms
+            }, 200);
         }
 
-        // ── Proses hasil QR yang berhasil di-scan ──
-        function prosesHasilScan(teks) {
-            statusEl.innerHTML = `
-                <span class="text-success">
-                    <i class="bi bi-check-circle me-1"></i>QR berhasil dibaca...
-                </span>`;
+        function prosesHasil(teks) {
+            statusEl.textContent = 'QR berhasil dibaca...';
 
-            // Ekstrak hash dari URL format: /pinjam/qr/{hash64}
-            const pattern = /\/pinjam\/qr\/([a-f0-9]{64})/;
-            const match   = teks.match(pattern);
+            const match = teks.match(/\/pinjam\/qr\/([a-f0-9]{64})/);
+            const hash  = match ? match[1] : null;
 
-            if (match) {
-                // QR valid dari sistem kita
-                const hash = match[1];
-                statusEl.innerHTML = `
-                    <span class="text-success">
-                        <i class="bi bi-arrow-right-circle me-1"></i>Mengarahkan ke form...
-                    </span>`;
+            if (hash) {
+                statusEl.textContent = 'Mengarahkan ke form...';
                 setTimeout(() => {
                     hentikanKamera();
                     window.location.href = `/pinjam/qr/${hash}`;
-                }, 600);
-
+                }, 500);
             } else {
-                // QR tidak dikenal
-                statusEl.innerHTML = `
-                    <span class="text-danger">
-                        <i class="bi bi-x-circle me-1"></i>QR Code tidak dikenal.
-                        Pastikan scan QR yang ada pada alat.
-                    </span>`;
-                // Coba scan lagi setelah 2 detik
+                statusEl.textContent = '✕ QR tidak dikenal. Pastikan scan QR yang ada pada alat.';
                 setTimeout(() => {
                     sudahScan = false;
                     statusEl.textContent = '';
-                }, 2000);
+                }, 2500);
             }
         }
 
-        // ── Tutup Scanner ──
         function tutupScanner() {
             hentikanKamera();
-            overlay.classList.remove('show');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
             statusEl.textContent = '';
         }
 
         function hentikanKamera() {
-            if (scanInterval) {
-                clearInterval(scanInterval);
-                scanInterval = null;
-            }
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
+            if (scanInterval) { clearInterval(scanInterval); scanInterval = null; }
+            if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
             video.srcObject = null;
         }
 
-        // Tutup jika klik di luar box scanner
-        overlay.addEventListener('click', function(e) {
+        document.getElementById('btnScanUtama').addEventListener('click', bukaScanner);
+        document.getElementById('btnTutupScanner').addEventListener('click', tutupScanner);
+        document.getElementById('btnTutupScanner2').addEventListener('click', tutupScanner);
+
+        overlay.addEventListener('click', e => {
             if (e.target === overlay) tutupScanner();
         });
 
-        // Tutup dengan tombol Escape
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', e => {
             if (e.key === 'Escape') tutupScanner();
         });
-    </script>
 
-
-{{-- Tombol Install App --}}
-<div id="installBanner" style="
-    display:none;
-    position:fixed;
-    bottom:20px;
-    left:50%;
-    transform:translateX(-50%);
-    background:#1e293b;
-    color:#fff;
-    padding:12px 20px;
-    border-radius:50px;
-    box-shadow:0 8px 24px rgba(0,0,0,.25);
-    z-index:9999;
-    align-items:center;
-    gap:12px;
-    font-size:.875rem;
-    white-space:nowrap;
-">
-    <i class="bi bi-download"></i>
-    <span>Install Aplikasi PinjamAlat</span>
-    <button id="btnInstall" style="
-        background:#3b82f6;
-        border:none;
-        color:#fff;
-        padding:6px 16px;
-        border-radius:20px;
-        font-weight:600;
-        cursor:pointer;
-        font-size:.8rem;
-    ">Install</button>
-    <button id="btnTutupInstall" style="
-        background:transparent;
-        border:none;
-        color:#94a3b8;
-        cursor:pointer;
-        font-size:1rem;
-        padding:0 4px;
-    ">✕</button>
-</div>
-
-<script>
-    let deferredPrompt = null;
-    const installBanner = document.getElementById('installBanner');
-    const btnInstall    = document.getElementById('btnInstall');
-    const btnTutup      = document.getElementById('btnTutupInstall');
-
-    // Tangkap event sebelum browser tampilkan prompt default
-    window.addEventListener('beforeinstallprompt', e => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installBanner.style.display = 'flex';
-    });
-
-    // Klik Install
-    btnInstall.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            installBanner.style.display = 'none';
+        // Handle shortcut ?action=scan dari manifest PWA
+        if (new URLSearchParams(window.location.search).get('action') === 'scan') {
+            window.addEventListener('load', () => setTimeout(bukaScanner, 500));
         }
-        deferredPrompt = null;
-    });
 
-    // Tutup banner
-    btnTutup.addEventListener('click', () => {
-        installBanner.style.display = 'none';
-    });
-
-    // Sudah terinstall
-    window.addEventListener('appinstalled', () => {
-        installBanner.style.display = 'none';
-        deferredPrompt = null;
-    });
-
-    // Handle shortcut scan dari manifest
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('action') === 'scan') {
-        window.addEventListener('load', () => {
-            setTimeout(() => bukaScanner(), 500);
-        });
-    }
-</script>
-
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+    </script>
 </body>
 </html>

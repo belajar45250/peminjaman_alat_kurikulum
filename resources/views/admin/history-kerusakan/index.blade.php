@@ -1,119 +1,117 @@
 {{-- resources/views/admin/history-kerusakan/index.blade.php --}}
 @extends('layouts.app')
-
 @section('title', 'History Kerusakan Alat')
-
-@section('breadcrumb')
-    <li class="breadcrumb-item active">History Kerusakan</li>
-@endsection
-
-@section('topbar_actions')
-    <a href="{{ route('admin.history-kerusakan.create') }}" class="btn btn-danger btn-sm">
-        <i class="bi bi-plus-lg me-1"></i>Catat Manual
-    </a>
-@endsection
 
 @section('content')
 
+{{-- Page Header --}}
+<div class="mb-8 flex items-end justify-between">
+    <div>
+        <p class="font-sans text-[0.55rem] font-semibold tracking-[0.35em] uppercase text-label mb-1">Administrasi</p>
+        <h1 class="font-serif text-ink text-3xl font-normal leading-none">History Kerusakan</h1>
+        <div class="mt-3 h-px w-10 bg-rule"></div>
+    </div>
+    <a href="{{ route('admin.history-kerusakan.create') }}"
+       class="flex items-center gap-2 bg-espresso text-paper px-4 py-2.5
+              font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+              hover:bg-ink transition-colors">
+        <i class="fas fa-plus text-[0.5rem]"></i> Catat Manual
+    </a>
+</div>
+
 {{-- Statistik --}}
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-xl-3">
-        <div class="card h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
-                <div class="icon-box" style="background:#fee2e2;">
-                    <i class="bi bi-exclamation-triangle-fill" style="color:#dc2626;"></i>
-                </div>
-                <div>
-                    <div class="text-muted small">Menunggu Tindakan</div>
-                    <div class="fw-bold fs-4 text-danger">{{ $stats['menunggu'] }}</div>
-                </div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-paper border border-rule p-5">
+        <div class="flex items-start justify-between gap-3">
+            <div>
+                <p class="font-sans text-[0.52rem] font-semibold tracking-[0.22em] uppercase text-label mb-2">Menunggu Tindakan</p>
+                <p class="font-serif text-[2rem] font-normal leading-none text-red-800">{{ $stats['menunggu'] }}</p>
+            </div>
+            <div class="w-10 h-10 bg-red-50 border border-red-100 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-triangle-exclamation text-red-700 text-[0.65rem]"></i>
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
-        <div class="card h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
-                <div class="icon-box" style="background:#fef9c3;">
-                    <i class="bi bi-wrench" style="color:#ca8a04;"></i>
-                </div>
-                <div>
-                    <div class="text-muted small">Sedang Diperbaiki</div>
-                    <div class="fw-bold fs-4 text-warning">{{ $stats['diperbaiki'] }}</div>
-                </div>
+
+    <div class="bg-paper border border-rule p-5">
+        <div class="flex items-start justify-between gap-3">
+            <div>
+                <p class="font-sans text-[0.52rem] font-semibold tracking-[0.22em] uppercase text-label mb-2">Sedang Diperbaiki</p>
+                <p class="font-serif text-[2rem] font-normal leading-none text-amber-800">{{ $stats['diperbaiki'] }}</p>
+            </div>
+            <div class="w-10 h-10 bg-amber-50 border border-amber-100 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-wrench text-amber-700 text-[0.65rem]"></i>
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
-        <div class="card h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
-                <div class="icon-box" style="background:#fee2e2;">
-                    <i class="bi bi-cash-coin" style="color:#dc2626;"></i>
-                </div>
-                <div>
-                    <div class="text-muted small">Denda Belum Lunas</div>
-                    <div class="fw-bold fs-4 text-danger">{{ $stats['belum_lunas'] }}</div>
-                </div>
+
+    <div class="bg-paper border border-rule p-5">
+        <div class="flex items-start justify-between gap-3">
+            <div>
+                <p class="font-sans text-[0.52rem] font-semibold tracking-[0.22em] uppercase text-label mb-2">Denda Belum Lunas</p>
+                <p class="font-serif text-[2rem] font-normal leading-none text-red-800">{{ $stats['belum_lunas'] }}</p>
+            </div>
+            <div class="w-10 h-10 bg-red-50 border border-red-100 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-file-invoice-dollar text-red-700 text-[0.65rem]"></i>
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-xl-3">
-        <div class="card h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
-                <div class="icon-box" style="background:#fee2e2;">
-                    <i class="bi bi-wallet2" style="color:#dc2626;"></i>
-                </div>
-                <div>
-                    <div class="text-muted small">Total Denda Tertunggak</div>
-                    <div class="fw-bold" style="font-size:1.1rem;color:#dc2626;">
-                        Rp {{ number_format($stats['total_denda'], 0, ',', '.') }}
-                    </div>
-                </div>
+
+    <div class="bg-paper border border-rule p-5">
+        <div class="flex items-start justify-between gap-3">
+            <div>
+                <p class="font-sans text-[0.52rem] font-semibold tracking-[0.22em] uppercase text-label mb-2">Total Tertunggak</p>
+                <p class="font-serif text-[1.4rem] font-normal leading-none text-red-800">
+                    Rp {{ number_format($stats['total_denda'], 0, ',', '.') }}
+                </p>
+            </div>
+            <div class="w-10 h-10 bg-red-50 border border-red-100 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-wallet text-red-700 text-[0.65rem]"></i>
             </div>
         </div>
     </div>
 </div>
 
 {{-- Filter --}}
-<div class="card mb-3">
-    <div class="card-body py-3">
-        <form method="GET" class="row g-2 align-items-end">
-            <div class="col-md-3">
-                <input type="text" name="search" class="form-control form-control-sm"
-                       placeholder="Cari nama, kelas, alat..."
-                       value="{{ request('search') }}">
+<div class="bg-paper border border-rule mb-5">
+    <div class="px-5 py-4 border-b border-rule/60">
+        <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Filter</p>
+    </div>
+    <div class="px-5 py-4">
+        <form method="GET" class="flex flex-wrap gap-3 items-end">
+            <div class="flex-1 min-w-[160px]">
+                <label class="block font-sans text-[0.48rem] tracking-[0.2em] uppercase text-ghost mb-2">Cari</label>
+                <input type="text" name="search" value="{{ request('search') }}"
+                       placeholder="Nama, kelas, alat..."
+                       class="w-full border-b border-rule bg-transparent pb-2 pt-1 font-sans text-[0.82rem] text-ink outline-none focus:border-ink placeholder-ghost">
             </div>
-            <div class="col-md-2">
-                <select name="status" class="form-select form-select-sm">
-                    <option value="">Semua Status</option>
-                    <option value="menunggu"           {{ request('status') === 'menunggu'           ? 'selected':'' }}>Menunggu</option>
-                    <option value="diperbaiki"         {{ request('status') === 'diperbaiki'         ? 'selected':'' }}>Diperbaiki</option>
-                    <option value="sudah_diperbaiki"   {{ request('status') === 'sudah_diperbaiki'   ? 'selected':'' }}>Sudah Diperbaiki</option>
-                    <option value="diganti_baru"       {{ request('status') === 'diganti_baru'       ? 'selected':'' }}>Diganti Baru</option>
-                    <option value="dihapuskan"         {{ request('status') === 'dihapuskan'         ? 'selected':'' }}>Dihapuskan</option>
+            @foreach([
+                ['name'=>'status','label'=>'Status','opts'=>[''=>'Semua Status','menunggu'=>'Menunggu','diperbaiki'=>'Diperbaiki','sudah_diperbaiki'=>'Sudah Diperbaiki','diganti_baru'=>'Diganti Baru','dihapuskan'=>'Dihapuskan']],
+                ['name'=>'jenis','label'=>'Jenis','opts'=>[''=>'Semua Jenis','rusak_ringan'=>'Rusak Ringan','rusak_berat'=>'Rusak Berat','hilang'=>'Hilang']],
+                ['name'=>'denda','label'=>'Denda','opts'=>[''=>'Semua','belum_lunas'=>'Belum Lunas','lunas'=>'Lunas','tidak_ada'=>'Tidak Ada']],
+            ] as $f)
+            <div class="min-w-[130px]">
+                <label class="block font-sans text-[0.48rem] tracking-[0.2em] uppercase text-ghost mb-2">{{ $f['label'] }}</label>
+                <select name="{{ $f['name'] }}"
+                        class="w-full border-b border-rule bg-transparent pb-2 pt-1 font-sans text-[0.82rem] text-ink outline-none focus:border-ink">
+                    @foreach($f['opts'] as $v => $l)
+                        <option value="{{ $v }}" {{ request($f['name']) === $v ? 'selected':'' }}>{{ $l }}</option>
+                    @endforeach
                 </select>
             </div>
-            <div class="col-md-2">
-                <select name="jenis" class="form-select form-select-sm">
-                    <option value="">Semua Jenis</option>
-                    <option value="rusak_ringan" {{ request('jenis') === 'rusak_ringan' ? 'selected':'' }}>Rusak Ringan</option>
-                    <option value="rusak_berat"  {{ request('jenis') === 'rusak_berat'  ? 'selected':'' }}>Rusak Berat</option>
-                    <option value="hilang"       {{ request('jenis') === 'hilang'       ? 'selected':'' }}>Hilang</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <select name="denda" class="form-select form-select-sm">
-                    <option value="">Semua Denda</option>
-                    <option value="belum_lunas" {{ request('denda') === 'belum_lunas' ? 'selected':'' }}>Belum Lunas</option>
-                    <option value="lunas"       {{ request('denda') === 'lunas'       ? 'selected':'' }}>Lunas</option>
-                    <option value="tidak_ada"   {{ request('denda') === 'tidak_ada'   ? 'selected':'' }}>Tidak Ada</option>
-                </select>
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary btn-sm">
-                    <i class="bi bi-search me-1"></i>Filter
+            @endforeach
+            <div class="flex gap-2">
+                <button type="submit"
+                    class="flex items-center gap-1.5 bg-espresso text-paper px-4 py-2.5
+                           font-sans text-[0.55rem] font-semibold tracking-[0.2em] uppercase hover:bg-ink transition-colors">
+                    <i class="fas fa-search text-[0.5rem]"></i> Filter
                 </button>
                 @if(request()->hasAny(['search','status','jenis','denda']))
-                    <a href="{{ route('admin.history-kerusakan.index') }}" class="btn btn-light btn-sm">Reset</a>
+                <a href="{{ route('admin.history-kerusakan.index') }}"
+                   class="flex items-center gap-1.5 border border-rule text-label px-4 py-2.5
+                          font-sans text-[0.55rem] font-semibold tracking-[0.2em] uppercase hover:bg-sand transition-colors">
+                    Reset
+                </a>
                 @endif
             </div>
         </form>
@@ -121,86 +119,108 @@
 </div>
 
 {{-- Tabel --}}
-<div class="card">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Alat</th>
-                        <th>Penanggung Jawab</th>
-                        <th>Jenis Kerusakan</th>
-                        <th>Tanggal</th>
-                        <th>Denda</th>
-                        <th>Status Tindak Lanjut</th>
-                        <th class="text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($history as $item)
-                    <tr>
-                        <td>
-                            <div class="fw-semibold small">{{ $item->nama_alat_snapshot }}</div>
-                            <code style="font-size:.72rem;">{{ $item->kode_alat_snapshot }}</code>
-                        </td>
-                        <td>
-                            @if($item->nama_peminjam)
-                                <div class="small">{{ $item->nama_peminjam }}</div>
-                                <span class="badge bg-light text-dark border" style="font-size:.7rem;">
-                                    {{ $item->kelas }}
-                                </span>
-                            @else
-                                <span class="text-muted small">—</span>
-                            @endif
-                        </td>
-                        <td>
-                            @php
-                                $badgeJenis = ['rusak_ringan'=>'warning','rusak_berat'=>'danger','hilang'=>'dark'];
-                            @endphp
-                            <span class="badge bg-{{ $badgeJenis[$item->jenis_kerusakan] ?? 'secondary' }}">
-                                {{ $item->label_jenis_kerusakan }}
+<div class="bg-paper border border-rule">
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead>
+                <tr>
+                    @foreach(['Alat','Penanggung Jawab','Jenis Kerusakan','Tanggal','Denda','Status Tindak Lanjut',''] as $th)
+                    <th class="font-sans text-[0.48rem] font-semibold tracking-[0.2em] uppercase text-label
+                               py-3.5 px-5 text-left border-b border-rule bg-cream {{ $loop->last ? 'text-center':'' }}">
+                        {{ $th }}
+                    </th>
+                    @endforeach
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($history as $item)
+                @php
+                    $jenisMap = [
+                        'rusak_ringan' => ['label'=>'Rusak Ringan','class'=>'bg-amber-50 text-amber-800 border-amber-200'],
+                        'rusak_berat'  => ['label'=>'Rusak Berat', 'class'=>'bg-red-50 text-red-800 border-red-200'],
+                        'hilang'       => ['label'=>'Hilang',       'class'=>'bg-espresso/10 text-ink border-rule'],
+                    ];
+                    $statusMap = [
+                        'menunggu'           => ['label'=>'Menunggu',        'class'=>'bg-red-50 text-red-800 border-red-200'],
+                        'diperbaiki'         => ['label'=>'Diperbaiki',      'class'=>'bg-amber-50 text-amber-800 border-amber-200'],
+                        'sudah_diperbaiki'   => ['label'=>'Sudah Diperbaiki','class'=>'bg-emerald-50 text-emerald-800 border-emerald-200'],
+                        'diganti_baru'       => ['label'=>'Diganti Baru',    'class'=>'bg-sky-50 text-sky-800 border-sky-200'],
+                        'dihapuskan'         => ['label'=>'Dihapuskan',      'class'=>'bg-sand text-dim border-rule'],
+                    ];
+                    $dendaMap = [
+                        'belum_lunas' => ['label'=>'Belum Lunas','class'=>'bg-red-50 text-red-800 border-red-200'],
+                        'lunas'       => ['label'=>'Lunas',      'class'=>'bg-emerald-50 text-emerald-800 border-emerald-200'],
+                        'tidak_ada'   => ['label'=>'Tidak Ada',  'class'=>'bg-sand text-dim border-rule'],
+                    ];
+                    $j = $jenisMap[$item->jenis_kerusakan]          ?? ['label'=>$item->jenis_kerusakan,'class'=>'bg-sand text-dim border-rule'];
+                    $s = $statusMap[$item->status_tindak_lanjut]    ?? ['label'=>$item->status_tindak_lanjut,'class'=>'bg-sand text-dim border-rule'];
+                    $d = $dendaMap[$item->status_denda]              ?? ['label'=>$item->status_denda,'class'=>'bg-sand text-dim border-rule'];
+                @endphp
+                <tr class="hover:bg-cream/40 transition-colors">
+                    <td class="py-4 px-5 border-b border-rule/40">
+                        <p class="font-serif text-ink text-[0.9rem] font-normal leading-tight">{{ $item->nama_alat_snapshot }}</p>
+                        <code class="font-mono text-[0.65rem] text-ghost bg-cream px-1 py-0.5 mt-0.5 inline-block">{{ $item->kode_alat_snapshot }}</code>
+                    </td>
+                    <td class="py-4 px-5 border-b border-rule/40">
+                        @if($item->nama_peminjam)
+                            <p class="font-sans text-[0.78rem] text-dim">{{ $item->nama_peminjam }}</p>
+                            <span class="font-sans text-[0.48rem] tracking-[0.1em] uppercase px-2 py-0.5 border bg-cream text-label border-rule">
+                                {{ $item->kelas }}
                             </span>
-                        </td>
-                        <td class="small">{{ $item->tanggal_rusak->format('d/m/Y') }}</td>
-                        <td>
-                            @if($item->jumlah_denda > 0)
-                                <div class="small fw-semibold {{ $item->status_denda === 'belum_lunas' ? 'text-danger' : 'text-success' }}">
-                                    Rp {{ number_format($item->jumlah_denda, 0, ',', '.') }}
-                                </div>
-                                <span class="badge bg-{{ $item->badge_denda }}" style="font-size:.68rem;">
-                                    {{ $item->label_status_denda }}
-                                </span>
-                            @else
-                                <span class="text-muted small">—</span>
-                            @endif
-                        </td>
-                        <td>
-                            <span class="badge bg-{{ $item->badge_status }}">
-                                {{ $item->label_status_tindak_lanjut }}
+                        @else
+                            <span class="text-ghost font-sans text-[0.7rem]">—</span>
+                        @endif
+                    </td>
+                    <td class="py-4 px-5 border-b border-rule/40">
+                        <span class="font-sans text-[0.48rem] tracking-[0.1em] uppercase px-2 py-0.5 border {{ $j['class'] }}">
+                            {{ $j['label'] }}
+                        </span>
+                    </td>
+                    <td class="py-4 px-5 border-b border-rule/40 font-sans text-[0.75rem] text-dim">
+                        {{ $item->tanggal_rusak->format('d/m/Y') }}
+                    </td>
+                    <td class="py-4 px-5 border-b border-rule/40">
+                        @if($item->jumlah_denda > 0)
+                            <p class="font-sans text-[0.75rem] font-semibold {{ $item->status_denda === 'belum_lunas' ? 'text-red-800' : 'text-emerald-800' }}">
+                                Rp {{ number_format($item->jumlah_denda, 0, ',', '.') }}
+                            </p>
+                            <span class="font-sans text-[0.48rem] tracking-[0.1em] uppercase px-2 py-0.5 border {{ $d['class'] }}">
+                                {{ $d['label'] }}
                             </span>
-                        </td>
-                        <td class="text-center">
-                            <a href="{{ route('admin.history-kerusakan.show', $item->id) }}"
-                               class="btn btn-icon btn-light border" title="Detail & Tindak Lanjut">
-                                <i class="bi bi-eye small"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-5 text-muted">
-                            <i class="bi bi-check-circle fs-1 d-block mb-2 opacity-25"></i>
-                            Tidak ada history kerusakan.
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        @if($history->hasPages())
-            <div class="p-3 border-top">{{ $history->links() }}</div>
-        @endif
+                        @else
+                            <span class="text-ghost font-sans text-[0.7rem]">—</span>
+                        @endif
+                    </td>
+                    <td class="py-4 px-5 border-b border-rule/40">
+                        <span class="font-sans text-[0.48rem] tracking-[0.1em] uppercase px-2 py-0.5 border {{ $s['class'] }}">
+                            {{ $s['label'] }}
+                        </span>
+                    </td>
+                    <td class="py-4 px-5 border-b border-rule/40 text-center">
+                        <a href="{{ route('admin.history-kerusakan.show', $item->id) }}"
+                           class="w-7 h-7 border border-rule flex items-center justify-center mx-auto
+                                  text-ghost hover:bg-espresso hover:text-paper hover:border-espresso transition-all"
+                           title="Detail">
+                            <i class="fas fa-arrow-right text-[0.5rem]"></i>
+                        </a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="py-16 text-center">
+                        <i class="fas fa-check-circle text-rule text-3xl block mb-3"></i>
+                        <p class="font-sans text-[0.62rem] tracking-[0.2em] uppercase text-ghost">Tidak ada history kerusakan</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
+    @if($history->hasPages())
+    <div class="px-5 py-4 border-t border-rule/60">
+        {{ $history->links() }}
+    </div>
+    @endif
 </div>
 
 @endsection

@@ -6,109 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Peminjaman Alat')</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-{{-- PWA Meta Tags --}}
-<meta name="theme-color" content="#3b82f6">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="PinjamAlat">
-<meta name="msapplication-TileColor" content="#3b82f6">
-<meta name="msapplication-TileImage" content="/icons/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-{{-- Web Manifest --}}
-<link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1c1917">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="PinjamAlat">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" href="/icons/icon-192.png">
 
-{{-- Apple Touch Icon --}}
-<link rel="apple-touch-icon" href="/icons/icon-192.png">
-
-{{-- Favicon --}}
-<link rel="icon" type="image/png" href="/icons/icon-192.png">
-
-
-    <style>
-        body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px 16px;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans:  ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        espresso: '#1c1917', ink: '#1a1714', dim: '#4a4540',
+                        label: '#6e665e', rule: '#c8bfb0', ghost: '#a89f94',
+                        paper: '#fffdf9', cream: '#f5f0e8', sand: '#e8e0d0',
+                    },
+                    animation: { 'fade-up': 'fadeUp 0.65s ease both' },
+                    keyframes: {
+                        fadeUp: {
+                            '0%':   { opacity: '0', transform: 'translateY(16px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                }
+            }
         }
-        .guest-card {
-            width: 100%;
-            max-width: 500px;
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.15);
-            overflow: hidden;
-        }
-        .guest-card-header {
-            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
-            padding: 28px 32px 24px;
-            text-align: center;
-            color: #fff;
-        }
-        .guest-card-body { padding: 32px; }
-        .form-label { font-weight: 600; font-size: .875rem; color: #374151; }
-        .form-control:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
-        .btn-primary { background: #3b82f6; border-color: #3b82f6; }
-        .btn-primary:hover { background: #2563eb; border-color: #2563eb; }
-    </style>
+    </script>
     @yield('styles')
 </head>
-<body>
-    <div class="guest-card">
-        <div class="guest-card-header">
-            @yield('card_header')
-        </div>
-        <div class="guest-card-body">
-            @if(session('error'))
-            <div class="alert alert-danger d-flex align-items-center gap-2 mb-3">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <div>{{ session('error') }}</div>
-            </div>
-            @endif
-            @if(session('success'))
-            <div class="alert alert-success d-flex align-items-center gap-2 mb-3">
-                <i class="bi bi-check-circle-fill"></i>
-                <div>{{ session('success') }}</div>
-            </div>
-            @endif
-            @yield('content')
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>{{-- Sebelum </body> di semua layout --}}
-<script>
-    // Register Service Worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker
-                .register('/sw.js')
-                .then(reg => {
-                    console.log('SW registered:', reg.scope);
+<body class="font-sans bg-paper min-h-screen">
 
-                    // Cek update SW
-                    reg.addEventListener('updatefound', () => {
-                        const newWorker = reg.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                // Ada versi baru — tampilkan notif update
-                                if (confirm('Versi baru tersedia! Muat ulang sekarang?')) {
-                                    window.location.reload();
-                                }
-                            }
-                        });
-                    });
-                })
-                .catch(err => console.log('SW failed:', err));
-        });
-    }
-</script>
+    {{-- Tombol login admin pojok kanan atas --}}
+    <a href="{{ route('login') }}"
+       class="fixed top-5 right-5 z-50 flex items-center gap-2
+              bg-paper border border-rule px-4 py-2
+              font-sans text-[0.55rem] font-semibold tracking-[0.22em] uppercase text-label
+              hover:bg-espresso hover:text-paper hover:border-espresso
+              transition-all duration-200">
+        <i class="fas fa-shield-halved text-[0.6rem]"></i>
+        <span>Login Admin</span>
+    </a>
 
+    @yield('content')
 
+    <script>
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+    </script>
     @yield('scripts')
 </body>
 </html>
