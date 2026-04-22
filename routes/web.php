@@ -76,6 +76,16 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/{historyKerusakan}',           [HistoryKerusakanController::class, 'show'])               ->name('show');
     Route::post('/{historyKerusakan}/tindak-lanjut', [HistoryKerusakanController::class, 'updateTindakLanjut']) ->name('tindak-lanjut');
     Route::post('/{historyKerusakan}/denda',    [HistoryKerusakanController::class, 'updateDenda'])        ->name('denda');
+
+    // Kelas
+    Route::post('pengaturan/tambah-kelas',  [PengaturanController::class, 'tambahKelas']) ->name('pengaturan.tambah-kelas');
+    Route::post('pengaturan/hapus-kelas',   [PengaturanController::class, 'hapusKelas'])  ->name('pengaturan.hapus-kelas');
+    Route::post('pengaturan/tambah-tingkat',[PengaturanController::class, 'tambahTingkat'])->name('pengaturan.tambah-tingkat');
+
+    // Jam Pelajaran
+    Route::post('pengaturan/tambah-jam',    [PengaturanController::class, 'tambahJam'])   ->name('pengaturan.tambah-jam');
+    Route::post('pengaturan/hapus-jam',     [PengaturanController::class, 'hapusJam'])    ->name('pengaturan.hapus-jam');
+    Route::post('pengaturan/update-jam',    [PengaturanController::class, 'updateJam'])   ->name('pengaturan.update-jam');
 });
     Route::get('/offline', [OfflineController::class, 'index'])->name('offline');
 });

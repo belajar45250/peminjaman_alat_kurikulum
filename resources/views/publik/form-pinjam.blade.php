@@ -3,10 +3,7 @@
 @section('title', 'Pinjam — ' . $alat->nama_alat)
 
 @section('content')
-@php
-    $jamPelajaran = config('sekolah.jam_pelajaran');
-    $kelasList    = config('sekolah.kelas');
-@endphp
+
 
 <div class="min-h-screen bg-cream flex items-start justify-center pt-16 pb-10 px-4">
     <div class="w-full max-w-5xl">

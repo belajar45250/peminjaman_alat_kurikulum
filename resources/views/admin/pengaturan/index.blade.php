@@ -123,6 +123,301 @@
             </form>
         </div>
 
+        {{-- ── SECTION KELAS ── --}}
+<div class="bg-paper border border-rule">
+    <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+        <div>
+            <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Peminjaman</p>
+            <h2 class="font-serif text-ink text-lg font-normal mt-0.5">Daftar Kelas</h2>
+        </div>
+        <button onclick="document.getElementById('modalTambahKelas').classList.remove('hidden')"
+                class="flex items-center gap-1.5 border border-rule text-label px-3 py-2
+                       font-sans text-[0.52rem] font-semibold tracking-[0.18em] uppercase
+                       hover:bg-espresso hover:text-paper hover:border-espresso transition-all">
+            <i class="fas fa-plus text-[0.45rem]"></i> Tambah
+        </button>
+    </div>
+
+    <div class="px-6 py-5">
+        @forelse($daftarKelas as $tingkatIndex => $group)
+        <div class="mb-5 last:mb-0">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="font-sans text-[0.5rem] font-semibold tracking-[0.25em] uppercase text-ghost">
+                    Tingkat {{ $tingkatIndex + 1 }}
+                </span>
+                <div class="flex-1 h-px bg-rule/50"></div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                @foreach($group as $kelas)
+                <div class="flex items-center gap-1.5 border border-rule bg-cream/50 px-3 py-1.5 group/kelas">
+                    <span class="font-sans text-[0.72rem] text-dim">{{ $kelas }}</span>
+                    <form method="POST" action="{{ route('admin.pengaturan.hapus-kelas') }}"
+                          onsubmit="return confirm('Hapus kelas {{ $kelas }}?')">
+                        @csrf
+                        <input type="hidden" name="nama_kelas" value="{{ $kelas }}">
+                        <button type="submit"
+                                class="text-ghost hover:text-red-700 transition-colors opacity-0 group-hover/kelas:opacity-100">
+                            <i class="fas fa-xmark text-[0.5rem]"></i>
+                        </button>
+                    </form>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @empty
+        <p class="font-sans text-[0.65rem] text-ghost text-center py-4">Belum ada kelas. Tambahkan kelas di bawah.</p>
+        @endforelse
+    </div>
+</div>
+
+{{-- ── SECTION JAM PELAJARAN ── --}}
+<div class="bg-paper border border-rule">
+    <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+        <div>
+            <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Peminjaman</p>
+            <h2 class="font-serif text-ink text-lg font-normal mt-0.5">Jam Pelajaran</h2>
+        </div>
+        <button onclick="document.getElementById('modalTambahJam').classList.remove('hidden')"
+                class="flex items-center gap-1.5 border border-rule text-label px-3 py-2
+                       font-sans text-[0.52rem] font-semibold tracking-[0.18em] uppercase
+                       hover:bg-espresso hover:text-paper hover:border-espresso transition-all">
+            <i class="fas fa-plus text-[0.45rem]"></i> Tambah
+        </button>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead>
+                <tr>
+                    @foreach(['Ke-','Mulai','Selesai','Durasi',''] as $th)
+                    <th class="font-sans text-[0.48rem] font-semibold tracking-[0.2em] uppercase text-label
+                               py-3 px-5 text-left border-b border-rule bg-cream">{{ $th }}</th>
+                    @endforeach
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($jamPelajaran as $jam)
+                <tr class="hover:bg-cream/40 transition-colors group/jam">
+                    <td class="py-3 px-5 border-b border-rule/40">
+                        <span class="font-serif text-ink text-[0.95rem]">{{ $jam['ke'] }}</span>
+                    </td>
+                    <td class="py-3 px-5 border-b border-rule/40 font-sans text-[0.82rem] text-dim font-semibold">
+                        {{ $jam['mulai'] }}
+                    </td>
+                    <td class="py-3 px-5 border-b border-rule/40 font-sans text-[0.82rem] text-dim font-semibold">
+                        {{ $jam['selesai'] }}
+                    </td>
+                    <td class="py-3 px-5 border-b border-rule/40 font-sans text-[0.72rem] text-ghost">
+                        @php
+                            $start = \Carbon\Carbon::createFromFormat('H:i', $jam['mulai']);
+                            $end   = \Carbon\Carbon::createFromFormat('H:i', $jam['selesai']);
+                            echo $start->diffInMinutes($end) . ' menit';
+                        @endphp
+                    </td>
+                    <td class="py-3 px-5 border-b border-rule/40">
+                        <div class="flex items-center gap-2 opacity-0 group-hover/jam:opacity-100 transition-opacity">
+                            {{-- Edit inline --}}
+                            <button onclick="bukaEditJam({{ $jam['ke'] }}, '{{ $jam['mulai'] }}', '{{ $jam['selesai'] }}')"
+                                    class="w-6 h-6 border border-rule flex items-center justify-center text-ghost
+                                           hover:bg-espresso hover:text-paper hover:border-espresso transition-all">
+                                <i class="fas fa-pen text-[0.4rem]"></i>
+                            </button>
+                            <form method="POST" action="{{ route('admin.pengaturan.hapus-jam') }}"
+                                  onsubmit="return confirm('Hapus jam ke-{{ $jam['ke'] }}?')">
+                                @csrf
+                                <input type="hidden" name="ke" value="{{ $jam['ke'] }}">
+                                <button type="submit"
+                                        class="w-6 h-6 border border-rule flex items-center justify-center text-ghost
+                                               hover:bg-red-900 hover:text-paper hover:border-red-900 transition-all">
+                                    <i class="fas fa-trash text-[0.4rem]"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="py-8 text-center font-sans text-[0.62rem] tracking-[0.15em] uppercase text-ghost">
+                        Belum ada jam pelajaran
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{-- ══ MODAL TAMBAH KELAS ══ --}}
+<div id="modalTambahKelas" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-paper border border-rule w-full max-w-sm mx-4">
+        <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+            <div>
+                <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Kelas</p>
+                <h3 class="font-serif text-ink text-lg font-normal mt-0.5">Tambah Kelas</h3>
+            </div>
+            <button onclick="document.getElementById('modalTambahKelas').classList.add('hidden')"
+                    class="w-7 h-7 border border-rule flex items-center justify-center text-ghost
+                           hover:bg-espresso hover:text-paper transition-all">
+                <i class="fas fa-xmark text-[0.5rem]"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.pengaturan.tambah-kelas') }}" class="px-6 py-6 space-y-5">
+            @csrf
+            <div>
+                <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                    Nama Kelas
+                </label>
+                <div class="relative">
+                    <input type="text" name="nama_kelas" placeholder="Contoh: X RPL 3" required
+                           class="peer w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none placeholder-ghost
+                                  transition-colors focus:border-ink">
+                    <span class="absolute bottom-0 left-0 h-px w-0 bg-ink transition-all duration-[350ms] peer-focus:w-full"></span>
+                </div>
+            </div>
+            <div>
+                <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                    Masukkan ke Tingkat
+                </label>
+                <select name="tingkat"
+                        class="w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                               font-sans text-[0.88rem] text-ink outline-none focus:border-ink transition-colors"
+                        required>
+                    @foreach($daftarKelas as $i => $group)
+                        <option value="{{ $i }}">Tingkat {{ $i + 1 }} ({{ count($group) }} kelas)</option>
+                    @endforeach
+                    <option value="{{ count($daftarKelas) }}">+ Buat Tingkat Baru</option>
+                </select>
+            </div>
+            <div class="pt-2 flex gap-3">
+                <button type="submit"
+                    class="flex items-center gap-2 bg-espresso text-paper px-5 py-2.5
+                           font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                           hover:bg-ink transition-colors">
+                    <i class="fas fa-check text-[0.45rem]"></i> Simpan
+                </button>
+                <button type="button"
+                        onclick="document.getElementById('modalTambahKelas').classList.add('hidden')"
+                        class="border border-rule text-label px-5 py-2.5
+                               font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                               hover:bg-sand transition-colors">
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- ══ MODAL TAMBAH JAM ══ --}}
+<div id="modalTambahJam" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-paper border border-rule w-full max-w-sm mx-4">
+        <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+            <div>
+                <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Jadwal</p>
+                <h3 class="font-serif text-ink text-lg font-normal mt-0.5">Tambah Jam Pelajaran</h3>
+            </div>
+            <button onclick="document.getElementById('modalTambahJam').classList.add('hidden')"
+                    class="w-7 h-7 border border-rule flex items-center justify-center text-ghost
+                           hover:bg-espresso hover:text-paper transition-all">
+                <i class="fas fa-xmark text-[0.5rem]"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.pengaturan.tambah-jam') }}" class="px-6 py-6 space-y-5">
+            @csrf
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                        Jam Mulai
+                    </label>
+                    <input type="time" name="mulai" required
+                           class="w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none focus:border-ink transition-colors">
+                </div>
+                <div>
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                        Jam Selesai
+                    </label>
+                    <input type="time" name="selesai" required
+                           class="w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none focus:border-ink transition-colors">
+                </div>
+            </div>
+            <p class="font-sans text-[0.58rem] tracking-wide text-ghost">
+                Jam akan diurutkan otomatis dan diberi nomor ulang.
+            </p>
+            <div class="pt-2 flex gap-3">
+                <button type="submit"
+                    class="flex items-center gap-2 bg-espresso text-paper px-5 py-2.5
+                           font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                           hover:bg-ink transition-colors">
+                    <i class="fas fa-check text-[0.45rem]"></i> Simpan
+                </button>
+                <button type="button"
+                        onclick="document.getElementById('modalTambahJam').classList.add('hidden')"
+                        class="border border-rule text-label px-5 py-2.5
+                               font-sans text-[0.58fransk] font-semibold tracking-[0.22em] uppercase
+                               hover:bg-sand transition-colors">
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- ══ MODAL EDIT JAM ══ --}}
+<div id="modalEditJam" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-paper border border-rule w-full max-w-sm mx-4">
+        <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+            <div>
+                <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Jadwal</p>
+                <h3 class="font-serif text-ink text-lg font-normal mt-0.5">Edit Jam ke-<span id="editJamLabel"></span></h3>
+            </div>
+            <button onclick="document.getElementById('modalEditJam').classList.add('hidden')"
+                    class="w-7 h-7 border border-rule flex items-center justify-center text-ghost
+                           hover:bg-espresso hover:text-paper transition-all">
+                <i class="fas fa-xmark text-[0.5rem]"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.pengaturan.update-jam') }}" class="px-6 py-6 space-y-5">
+            @csrf
+            <input type="hidden" name="ke" id="editJamKe">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                        Jam Mulai
+                    </label>
+                    <input type="time" name="mulai" id="editJamMulai" required
+                           class="w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none focus:border-ink transition-colors">
+                </div>
+                <div>
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                        Jam Selesai
+                    </label>
+                    <input type="time" name="selesai" id="editJamSelesai" required
+                           class="w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none focus:border-ink transition-colors">
+                </div>
+            </div>
+            <div class="pt-2 flex gap-3">
+                <button type="submit"
+                    class="flex items-center gap-2 bg-espresso text-paper px-5 py-2.5
+                           font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                           hover:bg-ink transition-colors">
+                    <i class="fas fa-check text-[0.45rem]"></i> Simpan
+                </button>
+                <button type="button"
+                        onclick="document.getElementById('modalEditJam').classList.add('hidden')"
+                        class="border border-rule text-label px-5 py-2.5
+                               font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                               hover:bg-sand transition-colors">
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
         {{-- Ganti Password --}}
         <div class="bg-paper border border-rule">
             <div class="border-b border-rule px-6 py-4">
@@ -306,5 +601,41 @@
     document.getElementById('modalTambahUser').addEventListener('click', function(e) {
         if (e.target === this) this.classList.add('hidden');
     });
+</script>
+
+<script>
+    // ── Modal helpers ──
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+        el.addEventListener('click', e => {
+            if (e.target === el) el.classList.add('hidden');
+        });
+    });
+
+    // ── Edit Jam ──
+    function bukaEditJam(ke, mulai, selesai) {
+        document.getElementById('editJamKe').value      = ke;
+        document.getElementById('editJamMulai').value   = mulai;
+        document.getElementById('editJamSelesai').value = selesai;
+        document.getElementById('editJamLabel').textContent = ke;
+        document.getElementById('modalEditJam').classList.remove('hidden');
+    }
+
+    // ── Tutup modal klik di luar ──
+    ['modalTambahUser','modalTambahKelas','modalTambahJam','modalEditJam'].forEach(id => {
+        const el = document.getElementById(id);
+        el?.addEventListener('click', e => { if (e.target === el) el.classList.add('hidden'); });
+    });
+
+    // ── Preview simulasi denda (sudah ada) ──
+    function updatePreview() {
+        const h = 500000;
+        const r = parseFloat(document.getElementById('inputRusak').value)  || 0;
+        const l = parseFloat(document.getElementById('inputHilang').value) || 0;
+        document.getElementById('previewRusak').textContent  = 'Rp ' + Math.round(h * r / 100).toLocaleString('id-ID');
+        document.getElementById('previewHilang').textContent = 'Rp ' + Math.round(h * l / 100).toLocaleString('id-ID');
+    }
+    document.getElementById('inputRusak')?.addEventListener('input', updatePreview);
+    document.getElementById('inputHilang')?.addEventListener('input', updatePreview);
+    updatePreview();
 </script>
 @endsection

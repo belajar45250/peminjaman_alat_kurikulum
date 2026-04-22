@@ -33,21 +33,23 @@ class PeminjamanPublikController extends Controller
      * Halaman setelah scan QR
      */
     public function scanQr(string $hash)
-    {
-        $validasi = $this->qrValidasi->validasiUntukPeminjaman($hash);
+{
+    $validasi = $this->qrValidasi->validasiUntukPeminjaman($hash);
 
-        if (!$validasi['valid']) {
-            return view('publik.qr-tidak-valid', [
-                'pesan' => $validasi['pesan'],
-                'alat'  => $validasi['alat'],
-            ]);
-        }
-
-        return view('publik.form-pinjam', [
-            'alat'   => $validasi['alat'],
-            'qrHash' => $hash,
+    if (!$validasi['valid']) {
+        return view('publik.qr-tidak-valid', [
+            'pesan' => $validasi['pesan'],
+            'alat'  => $validasi['alat'],
         ]);
     }
+
+    return view('publik.form-pinjam', [
+        'alat'         => $validasi['alat'],
+        'qrHash'       => $hash,
+        'kelasList'    => \App\Models\Pengaturan::getDaftarKelas(),   // ← dari DB
+        'jamPelajaran' => \App\Models\Pengaturan::getJamPelajaran(),  // ← dari DB
+    ]);
+}
 
     /**
      * Submit form peminjaman
