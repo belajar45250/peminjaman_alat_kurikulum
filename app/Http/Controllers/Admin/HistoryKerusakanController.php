@@ -116,36 +116,56 @@ class HistoryKerusakanController extends Controller
 
     // ── Update tindak lanjut ──
     public function updateTindakLanjut(Request $request, HistoryKerusakan $historyKerusakan)
-    {
-        $request->validate([
-            'status_tindak_lanjut'      => ['required', 'in:menunggu,diperbaiki,sudah_diperbaiki,diganti_baru,dihapuskan'],
-            'catatan_tindak_lanjut'     => ['nullable', 'string', 'max:1000'],
-            'biaya_perbaikan'           => ['nullable', 'numeric', 'min:0'],
-            'tanggal_selesai_perbaikan' => ['nullable', 'date'],
-        ]);
+{
+    $request->validate([
+        'status_tindak_lanjut'      => ['required', 'in:menunggu,diperbaiki,sudah_diperbaiki,diganti_baru,dihapuskan'],
+        'catatan_tindak_lanjut'     => ['nullable', 'string', 'max:1000'],
+        'biaya_perbaikan'           => ['nullable', 'numeric', 'min:0'],
+        'tanggal_selesai_perbaikan' => ['nullable', 'date'],
+    ]);
 
-        $data = [
-            'status_tindak_lanjut'  => $request->status_tindak_lanjut,
-            'catatan_tindak_lanjut' => $request->catatan_tindak_lanjut,
-            'biaya_perbaikan'       => $request->biaya_perbaikan ?? 0,
-        ];
+    $data = [
+        'status_tindak_lanjut'  => $request->status_tindak_lanjut,
+        'catatan_tindak_lanjut' => $request->catatan_tindak_lanjut,
+        'biaya_perbaikan'       => $request->biaya_perbaikan ?? 0,
+    ];
 
-        if (in_array($request->status_tindak_lanjut, ['sudah_diperbaiki', 'diganti_baru'])) {
-            $data['tanggal_selesai_perbaikan'] = $request->tanggal_selesai_perbaikan ?? now();
+    // Load alat dengan withTrashed agar tetap bisa diakses walau sudah di-soft delete
+    $alat = \App\Models\Alat::withTrashed()->find($historyKerusakan->alat_id);
 
-            // Update kondisi alat kembali ke baik
-            $historyKerusakan->alat->update(['kondisi' => 'baik', 'status' => 'tersedia']);
+    if (in_array($request->status_tindak_lanjut, ['sudah_diperbaiki', 'diganti_baru'])) {
+        $data['tanggal_selesai_perbaikan'] = $request->tanggal_selesai_perbaikan ?? now();
+
+        // Update kondisi alat kembali ke baik HANYA jika alat masih ada (tidak dihapuskan)
+        if ($alat && !$alat->trashed()) {
+            $alat->update(['kondisi' => 'baik', 'status' => 'tersedia']);
+        } elseif ($alat && $alat->trashed()) {
+            // Alat sudah dihapuskan sebelumnya — restore dulu baru update
+            $alat->restore();
+            $alat->update(['kondisi' => 'baik', 'status' => 'tersedia']);
         }
-
-        if ($request->status_tindak_lanjut === 'dihapuskan') {
-            // Soft delete alat dari inventaris
-            $historyKerusakan->alat->delete();
-        }
-
-        $historyKerusakan->update($data);
-
-        return back()->with('success', 'Tindak lanjut berhasil diperbarui.');
     }
+
+    if ($request->status_tindak_lanjut === 'dihapuskan') {
+        // Soft delete alat — gunakan withTrashed untuk antisipasi sudah terhapus
+        if ($alat && !$alat->trashed()) {
+            $alat->delete();
+        }
+        // Jika alat sudah trashed, tidak perlu delete lagi
+    }
+
+    if ($request->status_tindak_lanjut === 'diperbaiki') {
+        // Jika alat sempat dihapus lalu diperbaiki lagi, restore alat
+        if ($alat && $alat->trashed()) {
+            $alat->restore();
+            $alat->update(['kondisi' => 'rusak_berat', 'status' => 'tersedia']);
+        }
+    }
+
+    $historyKerusakan->update($data);
+
+    return back()->with('success', 'Tindak lanjut berhasil diperbarui.');
+}
 
     // ── Update status denda ──
     public function updateDenda(Request $request, HistoryKerusakan $historyKerusakan)
