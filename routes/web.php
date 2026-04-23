@@ -7,8 +7,10 @@ use App\Http\Controllers\Admin\PeminjamanController;
 use App\Http\Controllers\Admin\PengembalianController;
 use App\Http\Controllers\Admin\PengaturanController;
 use App\Http\Controllers\Admin\HistoryKerusakanController;
+use App\Http\Controllers\Admin\NotifikasiController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Publik\PeminjamanPublikController;
+use App\Http\Controllers\OfflineController;
 use Illuminate\Support\Facades\Route;
 
 // ============================================================
@@ -27,7 +29,26 @@ Route::prefix('pinjam')->name('publik.')->group(function () {
     Route::post('/submit', [PeminjamanPublikController::class, 'submitPeminjaman'])
          ->name('submit')
          ->middleware('throttle:10,1');
+
+    Route::get('/katalog', [PeminjamanPublikController::class, 'katalog'])
+         ->name('katalog');
+
+    Route::get('/validasi-qr/{hash}', [PeminjamanPublikController::class, 'validasiQrJson'])
+         ->name('validasi-qr')
+         ->where('hash', '[a-f0-9]{64}');
+
+    Route::get('/multi/{hashes}', [PeminjamanPublikController::class, 'formMulti'])
+         ->name('form-multi');
+
+    Route::post('/submit-multi', [PeminjamanPublikController::class, 'submitMulti'])
+         ->name('submit-multi')
+         ->middleware('throttle:10,1');
 });
+
+// ============================================================
+// OFFLINE
+// ============================================================
+Route::get('/offline', [OfflineController::class, 'index'])->name('offline');
 
 // ============================================================
 // RUTE AUTH
@@ -63,6 +84,13 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('pengembalian/proses', [PengembalianController::class, 'proses'])->name('pengembalian.proses');
     Route::get('pengembalian/sukses/{id}', [PengembalianController::class, 'sukses'])->name('pengembalian.sukses');
 
+    // Notifikasi
+    Route::prefix('notifikasi')->name('notifikasi.')->group(function () {
+        Route::get('/', [NotifikasiController::class, 'index'])->name('index');
+        Route::post('/{notifikasi}/baca', [NotifikasiController::class, 'baca'])->name('baca');
+        Route::post('/baca-semua', [NotifikasiController::class, 'bacaSemua'])->name('baca-semua');
+    });
+
     // Laporan
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.pdf');
@@ -73,13 +101,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('pengaturan/tambah-user', [PengaturanController::class, 'tambahUser'])->name('pengaturan.tambah-user');
     Route::delete('pengaturan/hapus-user/{user}', [PengaturanController::class, 'hapusUser'])->name('pengaturan.hapus-user');
     Route::post('pengaturan/ganti-password', [PengaturanController::class, 'gantiPassword'])->name('pengaturan.ganti-password');
-
-    // Pengaturan → Kelas
     Route::post('pengaturan/tambah-kelas', [PengaturanController::class, 'tambahKelas'])->name('pengaturan.tambah-kelas');
     Route::post('pengaturan/hapus-kelas', [PengaturanController::class, 'hapusKelas'])->name('pengaturan.hapus-kelas');
     Route::post('pengaturan/tambah-tingkat', [PengaturanController::class, 'tambahTingkat'])->name('pengaturan.tambah-tingkat');
-
-    // Pengaturan → Jam Pelajaran
     Route::post('pengaturan/tambah-jam', [PengaturanController::class, 'tambahJam'])->name('pengaturan.tambah-jam');
     Route::post('pengaturan/hapus-jam', [PengaturanController::class, 'hapusJam'])->name('pengaturan.hapus-jam');
     Route::post('pengaturan/update-jam', [PengaturanController::class, 'updateJam'])->name('pengaturan.update-jam');
@@ -93,6 +117,5 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::post('/{historyKerusakan}/tindak-lanjut', [HistoryKerusakanController::class, 'updateTindakLanjut'])->name('tindak-lanjut');
         Route::post('/{historyKerusakan}/denda', [HistoryKerusakanController::class, 'updateDenda'])->name('denda');
     });
-    Route::get('/offline', [OfflineController::class, 'index'])->name('offline');
-});
 
+});

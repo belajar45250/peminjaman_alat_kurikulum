@@ -82,6 +82,59 @@
                 <span>Install App</span>
             </button>
 
+            {{-- ══ NOTIFIKASI BELL (TAMBAH DISINI) ══ --}}
+            <div class="relative flex items-center px-3 border-l border-white/[0.08]" id="notifWrapper">
+                <button id="btnNotif"
+                        class="relative w-8 h-8 flex items-center justify-center
+                            text-paper/50 hover:text-paper transition-colors">
+                    <i class="fas fa-bell text-[0.75rem]"></i>
+                    <span id="notifBadge"
+                        class="hidden absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1
+                                bg-red-600 text-paper flex items-center justify-center
+                                font-sans text-[0.45rem] font-bold leading-none">
+                        0
+                    </span>
+                </button>
+
+                {{-- Dropdown Notifikasi --}}
+                <div id="notifDropdown"
+                    class="hidden absolute right-0 top-[48px] w-80 bg-paper border border-rule shadow-2xl z-50">
+
+                    {{-- Header --}}
+                    <div class="flex items-center justify-between px-5 py-3.5 border-b border-rule">
+                        <div>
+                            <p class="font-sans text-[0.48rem] font-semibold tracking-[0.22em] uppercase text-ghost">Sistem</p>
+                            <h3 class="font-serif text-ink text-base font-normal mt-0">Notifikasi</h3>
+                        </div>
+                        <button id="btnBacaSemua"
+                                class="font-sans text-[0.52rem] tracking-[0.12em] uppercase text-ghost
+                                    hover:text-ink transition-colors border border-rule px-2 py-1
+                                    hover:bg-sand">
+                            Baca Semua
+                        </button>
+                    </div>
+
+                    {{-- List --}}
+                    <div id="notifList" class="max-h-72 overflow-y-auto divide-y divide-rule/40">
+                        <div class="py-8 text-center">
+                            <i class="fas fa-bell-slash text-rule text-2xl block mb-2"></i>
+                            <p class="font-sans text-[0.6rem] tracking-[0.15em] uppercase text-ghost">
+                                Tidak ada notifikasi
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Footer --}}
+                    <div class="border-t border-rule px-5 py-3 text-center">
+                        <a href="{{ route('admin.peminjaman.index', ['status' => 'dipinjam']) }}"
+                        class="font-sans text-[0.52rem] tracking-[0.12em] uppercase text-label
+                                hover:text-ink transition-colors">
+                            Lihat Semua Peminjaman Aktif →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             {{-- User --}}
             <div class="flex items-center gap-3 px-4 border-l border-white/[0.08]">
                 <div class="relative">
@@ -283,6 +336,109 @@
         });
         if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
     </script>
+
+    <script>
+// ── Notifikasi Polling ──
+const notifBadge    = document.getElementById('notifBadge');
+const notifList     = document.getElementById('notifList');
+const notifDropdown = document.getElementById('notifDropdown');
+const btnNotif      = document.getElementById('btnNotif');
+const btnBacaSemua  = document.getElementById('btnBacaSemua');
+
+let notifTerbuka = false;
+
+// Toggle dropdown
+btnNotif.addEventListener('click', () => {
+    notifTerbuka = !notifTerbuka;
+    notifDropdown.classList.toggle('hidden', !notifTerbuka);
+    if (notifTerbuka) ambilNotifikasi();
+});
+
+// Tutup jika klik di luar
+document.addEventListener('click', e => {
+    if (!document.getElementById('notifWrapper').contains(e.target)) {
+        notifDropdown.classList.add('hidden');
+        notifTerbuka = false;
+    }
+});
+
+// Baca semua
+btnBacaSemua.addEventListener('click', async () => {
+    await fetch('{{ route("admin.notifikasi.baca-semua") }}', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+    });
+    ambilNotifikasi();
+});
+
+// Render notifikasi
+function renderNotifikasi(data) {
+    const { jumlah, notifikasi } = data;
+
+    // Badge
+    if (jumlah > 0) {
+        notifBadge.textContent = jumlah > 99 ? '99+' : jumlah;
+        notifBadge.classList.remove('hidden');
+        notifBadge.classList.add('flex');
+    } else {
+        notifBadge.classList.add('hidden');
+        notifBadge.classList.remove('flex');
+    }
+
+    // List
+    if (notifikasi.length === 0) {
+        notifList.innerHTML = `
+            <div class="py-8 text-center">
+                <i class="fas fa-bell-slash text-rule text-2xl block mb-2"></i>
+                <p class="font-sans text-[0.6rem] tracking-[0.15em] uppercase text-ghost">Tidak ada notifikasi</p>
+            </div>`;
+        return;
+    }
+
+    notifList.innerHTML = notifikasi.map(n => `
+        <div class="flex items-start gap-3 px-4 py-3 hover:bg-cream/50 transition-colors cursor-pointer notif-item"
+             data-id="${n.id}" data-peminjaman="${n.peminjaman_id}">
+            <div class="w-7 h-7 flex-shrink-0 bg-red-50 border border-red-200 flex items-center justify-center mt-0.5">
+                <i class="fas fa-clock text-red-700 text-[0.5rem]"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-sans text-[0.65rem] font-semibold text-ink leading-tight mb-0.5">${n.judul}</p>
+                <p class="font-sans text-[0.6rem] text-label leading-relaxed">${n.pesan}</p>
+                <p class="font-sans text-[0.52rem] tracking-wide text-ghost mt-1">${n.waktu}</p>
+            </div>
+        </div>
+    `).join('');
+
+    // Klik notif → baca & buka detail
+    document.querySelectorAll('.notif-item').forEach(el => {
+        el.addEventListener('click', async () => {
+            const id         = el.dataset.id;
+            const peminjamanId = el.dataset.peminjaman;
+            await fetch(`/admin/notifikasi/${id}/baca`, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+            });
+            window.location.href = `/admin/peminjaman/${peminjamanId}`;
+        });
+    });
+}
+
+// Fetch dari server
+async function ambilNotifikasi() {
+    try {
+        const res  = await fetch('{{ route("admin.notifikasi.index") }}');
+        const data = await res.json();
+        renderNotifikasi(data);
+    } catch (e) {
+        console.error('Notif error:', e);
+    }
+}
+
+// Polling setiap 30 detik
+ambilNotifikasi();
+setInterval(ambilNotifikasi, 30000);
+</script>
     @yield('scripts')
+    
 </body>
 </html>

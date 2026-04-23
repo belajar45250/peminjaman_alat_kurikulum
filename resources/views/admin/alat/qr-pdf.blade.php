@@ -66,9 +66,28 @@
         <div class="sekolah">{{ \App\Models\Pengaturan::ambil('nama_sekolah', 'Sistem Peminjaman') }}</div>
 
         <img src="data:{{ $qrMime }};base64,{{ $qrBase64 }}" alt="QR Code">
-
+        
+        {{-- Tambahkan nomor urut di bawah nama alat --}}
         <div class="nama-alat">{{ $alat->nama_alat }}</div>
+
+        @if($alat->nomor_urut)
+        <div style="
+            font-size: 22px;
+            font-weight: bold;
+            color: #1a1a1a;
+            background: #f5f0e8;
+            border: 2px solid #1a1a1a;
+            display: inline-block;
+            padding: 4px 16px;
+            margin: 6px auto 6px;
+            letter-spacing: 0.1em;
+        ">
+            #{{ $alat->nomor_urut }}
+        </div>
+        @endif
+
         <div class="kode-alat">{{ $alat->kode_alat }}</div>
+
 
         <div class="divider"></div>
         <div class="instruksi">

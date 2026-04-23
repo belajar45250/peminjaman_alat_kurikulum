@@ -131,10 +131,10 @@ class AlatController extends Controller
         $qrBase64 = base64_encode($qrSvg);
 
         $pdf = Pdf::loadView('admin.alat.qr-pdf', [
-            'alat'      => $alat,
-            'qrBase64'  => $qrBase64,
-            'qrMime'    => 'image/svg+xml',
-            'url'       => $url,
+            'alat'     => $alat,
+            'qrBase64' => $qrBase64,
+            'qrMime'   => 'image/svg+xml',
+            'url'      => $url,
         ])->setPaper('a6', 'portrait');
 
         return $pdf->download("QR-{$alat->kode_alat}.pdf");

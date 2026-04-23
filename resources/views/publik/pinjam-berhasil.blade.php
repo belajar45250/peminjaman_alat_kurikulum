@@ -39,7 +39,11 @@
                             ['label' => 'Alat',           'value' => $peminjaman->nama_alat_snapshot],
                             ['label' => 'Peminjam',       'value' => $peminjaman->nama_peminjam],
                             ['label' => 'Kelas',          'value' => $peminjaman->kelas],
+                            ['label' => 'Mata Pelajaran', 'value' => $peminjaman->mata_pelajaran],
                         ];
+                        if ($peminjaman->guru_pengampu) {
+                            $rows[] = ['label' => 'Guru Pengampu', 'value' => $peminjaman->guru_pengampu];
+                        }
                     @endphp
                     @foreach($rows as $row)
                     <div class="flex items-center justify-between px-4 py-3">

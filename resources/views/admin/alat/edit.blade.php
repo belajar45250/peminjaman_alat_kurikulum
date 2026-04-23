@@ -65,6 +65,26 @@
                     @error('nama_alat')
                         <p class="mt-1.5 font-sans text-[0.6rem] tracking-wide text-red-700">{{ $message }}</p>
                     @enderror
+                </div>\
+                
+                {{-- Tambahkan setelah field nama_alat --}}
+                <div>
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                        Nomor Urut
+                        <span class="text-ghost font-normal normal-case tracking-normal ml-1">(opsional)</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" name="nomor_urut"
+                            value="{{ old('nomor_urut', $alat->nomor_urut ?? '') }}"
+                            placeholder="Contoh: 01, LAP-03"
+                            class="peer w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                    font-sans text-[0.88rem] tracking-wide text-ink outline-none
+                                    placeholder-ghost transition-colors duration-200 focus:border-ink">
+                        <span class="absolute bottom-0 left-0 h-px w-0 bg-ink transition-all duration-[350ms] peer-focus:w-full"></span>
+                    </div>
+                    <p class="mt-1.5 font-sans text-[0.58rem] tracking-wide text-ghost">
+                        Akan tampil di QR Code dan katalog.
+                    </p>
                 </div>
 
                 {{-- Kode Alat --}}

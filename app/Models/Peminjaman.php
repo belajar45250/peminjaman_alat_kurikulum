@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Notifikasi;
 use Illuminate\Support\Str;
 
 class Peminjaman extends Model
@@ -59,6 +60,12 @@ class Peminjaman extends Model
     }
 
     // ── Relasi ──
+
+    public function notifikasiTerlambat()
+    {
+    return $this->hasOne(Notifikasi::class, 'peminjaman_id')
+                ->where('tipe', 'terlambat');
+    }
     public function alat(): BelongsTo
     {
         return $this->belongsTo(Alat::class, 'alat_id');
