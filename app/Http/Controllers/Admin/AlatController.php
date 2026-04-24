@@ -43,6 +43,7 @@ class AlatController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('gambar')) {
+            Storage::disk('public')->makeDirectory('alat', 0755, true);
             $data['gambar'] = $request->file('gambar')->store('alat', 'public');
         }
 
@@ -63,6 +64,8 @@ class AlatController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('gambar')) {
+            Storage::disk('public')->makeDirectory('alat', 0755, true);
+
             if ($alat->gambar) {
                 Storage::disk('public')->delete($alat->gambar);
             }
