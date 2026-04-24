@@ -65,7 +65,7 @@
                     @error('nama_alat')
                         <p class="mt-1.5 font-sans text-[0.6rem] tracking-wide text-red-700">{{ $message }}</p>
                     @enderror
-                </div>\
+                </div>
                 
                 {{-- Tambahkan setelah field nama_alat --}}
                 <div>
@@ -199,8 +199,9 @@
                     </label>
                     @if($alat->gambar)
                         <div class="mb-3 flex items-center gap-4">
-                            <img src="{{ Storage::url($alat->gambar) }}"
-                                 class="h-20 w-20 object-cover border border-rule" alt="Foto alat">
+                            <img src="{{ Storage::exists($alat->gambar) ? Storage::url($alat->gambar) : asset('storage/' . $alat->gambar) }}"
+                                class="h-20 w-20 object-cover border border-rule" alt="Foto alat"
+                                onerror="this.style.display='none'">
                             <p class="font-sans text-[0.6rem] tracking-wide text-ghost">Upload foto baru untuk mengganti.</p>
                         </div>
                     @endif
