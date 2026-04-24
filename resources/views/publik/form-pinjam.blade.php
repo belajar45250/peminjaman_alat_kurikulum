@@ -147,12 +147,20 @@
                                                bg-transparent pb-2.5 pt-1 font-sans text-[0.82rem] text-ink
                                                outline-none focus:border-ink transition-colors">
                                     <option value="" disabled {{ old('jam_pelajaran_mulai') ? '' : 'selected' }}>— Jam Mulai —</option>
+                                    {{-- Di select jam_pelajaran_mulai dan jam_pelajaran_selesai --}}
                                     @foreach($jamPelajaran as $ke => $jam)
+                                        @php
+                                            $sekarang   = now()->format('H:i');
+                                            $sudahLewat = $jam['selesai'] <= $sekarang;
+                                            $sedangJalan = $jam['mulai'] <= $sekarang && $jam['selesai'] > $sekarang;
+                                        @endphp
                                         <option value="{{ $ke }}"
-                                                data-mulai="{{ $jam['mulai'] }}"
-                                                data-selesai="{{ $jam['selesai'] }}"
-                                                {{ (int) old('jam_pelajaran_mulai') === $ke ? 'selected' : '' }}>
+                                                {{ (int) old('jam_pelajaran_mulai') === $ke ? 'selected' : '' }}
+                                                {{ $sudahLewat ? 'disabled' : '' }}>
                                             Jam ke-{{ $ke }} ({{ $jam['mulai'] }})
+                                            @if($sedangJalan) · Sedang berlangsung
+                                            @elseif($sudahLewat) · Sudah lewat
+                                            @endif
                                         </option>
                                     @endforeach
                                 </select>

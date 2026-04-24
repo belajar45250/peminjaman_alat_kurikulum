@@ -46,8 +46,8 @@ class PeminjamanPublikController extends Controller
     return view('publik.form-pinjam', [
         'alat'         => $validasi['alat'],
         'qrHash'       => $hash,
-        'kelasList'    => \App\Models\Pengaturan::getDaftarKelas(),   // ← dari DB
-        'jamPelajaran' => \App\Models\Pengaturan::getJamPelajaran(),  // ← dari DB
+        'kelasList'    => \App\Models\Pengaturan::getDaftarKelas(),
+        'jamPelajaran' => \App\Models\Pengaturan::getJamTersedia(), // ← pakai yang tersedia
     ]);
 }
 
@@ -139,7 +139,7 @@ public function formMulti(string $hashes)
     }
 
     $kelasList    = \App\Models\Pengaturan::getDaftarKelas();
-    $jamPelajaran = \App\Models\Pengaturan::getJamPelajaran();
+    $jamPelajaran = \App\Models\Pengaturan::getJamTersedia();
 
     return view('publik.form-multi', compact('alatList', 'kelasList', 'jamPelajaran', 'hashes'));
 }

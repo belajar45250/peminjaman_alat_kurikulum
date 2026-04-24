@@ -60,6 +60,25 @@ class Pengaturan extends Model
         return $result;
     }
 
+    public static function getJamTersedia(): array
+    {
+        $semua    = self::getJamPelajaran();
+        $sekarang = now()->format('H:i');
+        $tersedia = [];
+
+        foreach ($semua as $ke => $jam) {
+            // Tampilkan jam yang belum selesai (selesai > sekarang)
+            // ATAU sedang berjalan (mulai <= sekarang <= selesai)
+            if ($jam['selesai'] > $sekarang) {
+                $tersedia[$ke] = $jam;
+            }
+        }
+
+        // Kalau semua sudah lewat (misal sore hari), tampilkan semua
+        // supaya tidak kosong
+        return !empty($tersedia) ? $tersedia : $semua;
+    }
+
     // ── Flat list kelas untuk dropdown ──
     public static function getFlatKelas(): array
     {
