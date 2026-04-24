@@ -9,6 +9,7 @@ use App\Models\Pengembalian;
 use App\Models\Pengaturan;
 use App\Models\HistoryKerusakan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PeminjamanService
 {
@@ -19,67 +20,73 @@ class PeminjamanService
     /**
      * Proses peminjaman baru.
      */
-   public function prosesPeminjaman(array $data, string $qrHash): Peminjaman
-{
-    return DB::transaction(function () use ($data, $qrHash) {
-        $validasi = $this->qrValidasi->validasiUntukPeminjaman($qrHash);
-        if (!$validasi['valid']) throw new \RuntimeException($validasi['pesan']);
+    public function prosesPeminjaman(array $data, string $qrHash): Peminjaman
+    {
+        return DB::transaction(function () use ($data, $qrHash) {
+            $validasi = $this->qrValidasi->validasiUntukPeminjaman($qrHash);
+            if (!$validasi['valid']) throw new \RuntimeException($validasi['pesan']);
 
-        $alat = Alat::lockForUpdate()->find($validasi['alat']->id);
-        if ($alat->status !== 'tersedia') {
-            throw new \RuntimeException('Alat baru saja dipinjam oleh orang lain.');
-        }
+            $alat = Alat::lockForUpdate()->find($validasi['alat']->id);
+            if ($alat->status !== 'tersedia') {
+                throw new \RuntimeException('Alat baru saja dipinjam oleh orang lain.');
+            }
 
-        // Ambil jam pelajaran dari Pengaturan, bukan config
-        $jamPelajaran = Pengaturan::getJamTersedia();
-        
-        $jamMulai   = $jamPelajaran[$data['jam_pelajaran_mulai'] - 1] ?? null;
-        $jamSelesai = $jamPelajaran[$data['jam_pelajaran_selesai'] - 1] ?? null;
+            // Ambil jam pelajaran dari Pengaturan
+            $jamPelajaran = Pengaturan::getJamTersedia();
+            
+            $jamMulai   = $jamPelajaran[$data['jam_pelajaran_mulai']] ?? null;
+            $jamSelesai = $jamPelajaran[$data['jam_pelajaran_selesai']] ?? null;
 
-        if (!$jamMulai || !$jamSelesai) {
-            throw new \RuntimeException('Jam pelajaran tidak valid.');
-        }
+            if (!$jamMulai || !$jamSelesai) {
+                throw new \RuntimeException('Jam pelajaran tidak valid.');
+            }
 
-        // Estimasi kembali = jam selesai pelajaran hari ini
-        $estimasiKembali = now()->setTimeFromTimeString($jamSelesai['selesai']);
+            // Estimasi kembali = jam selesai pelajaran hari ini
+            $estimasiKembali = now()->setTimeFromTimeString($jamSelesai['selesai']);
 
-        // Jika waktu selesai sudah lewat hari ini, set ke besok
-        if ($estimasiKembali->isPast()) {
-            $estimasiKembali->addDay();
-        }
+            // Jika waktu selesai sudah lewat hari ini, set ke besok
+            if ($estimasiKembali->isPast()) {
+                $estimasiKembali->addDay();
+            }
 
-        $peminjaman = Peminjaman::create([
-            'alat_id'               => $alat->id,
-            'kode_alat_snapshot'    => $alat->kode_alat,
-            'nama_alat_snapshot'    => $alat->nama_alat,
-            'qr_hash_snapshot'      => $alat->qr_hash,
-            'nama_peminjam'         => $data['nama_peminjam'],
-            'kelas'                 => $data['kelas'],
-            'mata_pelajaran'        => $data['mata_pelajaran'],
-            'guru_pengampu'         => $data['guru_pengampu'] ?? null,
-            'jam_pelajaran_mulai'   => $data['jam_pelajaran_mulai'],
-            'jam_pelajaran_selesai' => $data['jam_pelajaran_selesai'],
-            'waktu_mulai_pinjam'    => $jamMulai['mulai'],
-            'waktu_selesai_pinjam'  => $jamSelesai['selesai'],
-            'keperluan'             => $data['keperluan'] ?? null,
-            'waktu_pinjam'          => now(),
-            'estimasi_kembali'      => $estimasiKembali,
-            'status'                => 'dipinjam',
-            'ip_peminjam'           => request()->ip(),
-            'user_agent'            => request()->userAgent(),
-        ]);
+            $peminjaman = Peminjaman::create([
+                'alat_id'               => $alat->id,
+                'kode_alat_snapshot'    => $alat->kode_alat,
+                'nama_alat_snapshot'    => $alat->nama_alat,
+                'qr_hash_snapshot'      => $alat->qr_hash,
+                'nama_peminjam'         => $data['nama_peminjam'],
+                'kelas'                 => $data['kelas'],
+                'mata_pelajaran'        => $data['mata_pelajaran'],
+                'guru_pengampu'         => $data['guru_pengampu'] ?? null,
+                'jam_pelajaran_mulai'   => $data['jam_pelajaran_mulai'],
+                'jam_pelajaran_selesai' => $data['jam_pelajaran_selesai'],
+                'waktu_mulai_pinjam'    => $jamMulai['mulai'],
+                'waktu_selesai_pinjam'  => $jamSelesai['selesai'],
+                'keperluan'             => $data['keperluan'] ?? null,
+                'waktu_pinjam'          => now(),
+                'estimasi_kembali'      => $estimasiKembali,
+                'status'                => 'dipinjam',
+                'ip_peminjam'           => request()->ip(),
+                'user_agent'            => request()->userAgent(),
+            ]);
 
-        $alat->update(['status' => 'dipinjam']);
+            $alat->update(['status' => 'dipinjam']);
 
-        return $peminjaman;
-    });
-}
+            return $peminjaman;
+        });
+    }
 
     /**
-     * Proses pengembalian.
+     * Proses pengembalian dengan validasi ketat.
      */
     public function prosespengembalian(array $data, string $qrHash): Pengembalian
     {
+        // ✅ Validasi input kondisi
+        $kondisiValid = ['baik', 'rusak_ringan', 'rusak_berat', 'hilang'];
+        if (!isset($data['kondisi_kembali']) || !in_array($data['kondisi_kembali'], $kondisiValid)) {
+            throw new \RuntimeException('Kondisi kembali tidak valid.');
+        }
+
         return DB::transaction(function () use ($data, $qrHash) {
             $validasi = $this->qrValidasi->validasiUntukPengembalian($qrHash);
 
@@ -103,28 +110,45 @@ class PeminjamanService
                 throw new \RuntimeException('Pengembalian sudah diproses sebelumnya.');
             }
 
-            // Hitung denda
+            // ✅ Validasi QR match
+            if ($peminjaman->qr_hash_snapshot !== $qrHash) {
+                Log::warning('QR mismatch pada pengembalian', [
+                    'peminjaman_id' => $peminjaman->id,
+                    'expected_hash' => $peminjaman->qr_hash_snapshot,
+                    'received_hash' => $qrHash,
+                    'ip' => request()->ip(),
+                    'timestamp' => now(),
+                ]);
+                throw new \RuntimeException('QR tidak sesuai dengan alat yang dipinjam.');
+            }
+
+            // ✅ Hitung denda
             $kondisiKembali = $data['kondisi_kembali'];
             $dendaData = $this->hitungDenda($alat, $kondisiKembali);
 
             // Buat record pengembalian
             $pengembalian = Pengembalian::create([
-                'peminjaman_id'       => $peminjaman->id,
-                'alat_id'             => $alat->id,
-                'qr_hash_dikembalikan' => $qrHash, // Audit trail
-                'waktu_kembali'       => now(),
-                'kondisi_kembali'     => $kondisiKembali,
-                'catatan'             => $data['catatan'] ?? null,
-                'ada_denda'           => $dendaData['ada_denda'],
-                'jenis_denda'         => $dendaData['jenis_denda'],
-                'persentase_denda'    => $dendaData['persentase'],
-                'harga_alat_snapshot' => $alat->harga,
-                'jumlah_denda'        => $dendaData['jumlah'],
-                'denda_lunas'         => !$dendaData['ada_denda'],
-                'diproses_oleh'       => auth()->id(),
+                'peminjaman_id'        => $peminjaman->id,
+                'alat_id'              => $alat->id,
+                'qr_hash_dikembalikan' => $qrHash,
+                'waktu_kembali'        => now(),
+                'kondisi_kembali'      => $kondisiKembali,
+                'catatan'              => $data['catatan'] ?? null,
+                'ada_denda'            => $dendaData['ada_denda'],
+                'jenis_denda'          => $dendaData['jenis_denda'],
+                'persentase_denda'     => $dendaData['persentase'],
+                'harga_alat_snapshot'  => $alat->harga,
+                'jumlah_denda'         => $dendaData['jumlah'],
+                'denda_lunas'          => !$dendaData['ada_denda'],
+                'diproses_oleh'        => auth()->id(),
             ]);
 
+            // ✅ Cegah double-report kondisi rusak
             if (in_array($kondisiKembali, ['rusak_berat', 'hilang'])) {
+                if ($alat->kondisi === 'rusak_berat' && $kondisiKembali === 'rusak_berat') {
+                    throw new \RuntimeException('Alat sudah dalam kondisi rusak berat sebelumnya.');
+                }
+                
                 $this->catatKerusakan($pengembalian, $alat, $peminjaman, $kondisiKembali);
             }
 
@@ -137,38 +161,48 @@ class PeminjamanService
                 'kondisi' => $this->mapKondisi($kondisiKembali),
             ]);
 
+            // ✅ Log pengembalian untuk audit
+            Log::info('Pengembalian berhasil diproses', [
+                'pengembalian_id' => $pengembalian->id,
+                'peminjaman_id'   => $peminjaman->id,
+                'alat_id'         => $alat->id,
+                'kondisi_kembali' => $kondisiKembali,
+                'jumlah_denda'    => $pengembalian->jumlah_denda,
+                'diproses_oleh'   => auth()->user()->name,
+                'timestamp'       => now(),
+            ]);
+
             return $pengembalian;
         });
     }
 
-    // ── Tambah method baru ──
-private function catatKerusakan(
-    Pengembalian $pengembalian,
-    Alat $alat,
-    Peminjaman $peminjaman,
-    string $kondisi
-): void {
-    HistoryKerusakan::create([
-        'alat_id'             => $alat->id,
-        'pengembalian_id'     => $pengembalian->id,
-        'nama_alat_snapshot'  => $alat->nama_alat,
-        'kode_alat_snapshot'  => $alat->kode_alat,
-        'nama_peminjam'       => $peminjaman->nama_peminjam,
-        'kelas'               => $peminjaman->kelas,
-        'jenis_kerusakan'     => $kondisi === 'hilang' ? 'hilang' : 'rusak_berat',
-        'kondisi_sebelum'     => 'baik',
-        'deskripsi_kerusakan' => $kondisi === 'hilang'
-                                    ? 'Alat hilang saat dipinjam.'
-                                    : 'Alat dikembalikan dalam kondisi rusak berat.',
-        'foto_kerusakan'      => null,
-        'harga_alat'          => $alat->harga,
-        'jumlah_denda'        => $pengembalian->jumlah_denda,
-        'status_denda'        => $pengembalian->jumlah_denda > 0 ? 'belum_lunas' : 'tidak_ada',
-        'status_tindak_lanjut' => 'menunggu',
-        'dicatat_oleh'        => auth()->id(),
-        'tanggal_rusak'       => now(),
-    ]);
-}
+    private function catatKerusakan(
+        Pengembalian $pengembalian,
+        Alat $alat,
+        Peminjaman $peminjaman,
+        string $kondisi
+    ): void {
+        HistoryKerusakan::create([
+            'alat_id'             => $alat->id,
+            'pengembalian_id'     => $pengembalian->id,
+            'nama_alat_snapshot'  => $alat->nama_alat,
+            'kode_alat_snapshot'  => $alat->kode_alat,
+            'nama_peminjam'       => $peminjaman->nama_peminjam,
+            'kelas'               => $peminjaman->kelas,
+            'jenis_kerusakan'     => $kondisi === 'hilang' ? 'hilang' : 'rusak_berat',
+            'kondisi_sebelum'     => 'baik',
+            'deskripsi_kerusakan' => $kondisi === 'hilang'
+                                        ? 'Alat hilang saat dipinjam.'
+                                        : 'Alat dikembalikan dalam kondisi rusak berat.',
+            'foto_kerusakan'      => null,
+            'harga_alat'          => $alat->harga,
+            'jumlah_denda'        => $pengembalian->jumlah_denda,
+            'status_denda'        => $pengembalian->jumlah_denda > 0 ? 'belum_lunas' : 'tidak_ada',
+            'status_tindak_lanjut' => 'menunggu',
+            'dicatat_oleh'        => auth()->id(),
+            'tanggal_rusak'       => now(),
+        ]);
+    }
 
     private function hitungDenda(Alat $alat, string $kondisi): array
     {
