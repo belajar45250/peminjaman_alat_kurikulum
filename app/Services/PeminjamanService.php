@@ -19,7 +19,7 @@ class PeminjamanService
     /**
      * Proses peminjaman baru.
      */
-    public function prosesPeminjaman(array $data, string $qrHash): Peminjaman
+   public function prosesPeminjaman(array $data, string $qrHash): Peminjaman
 {
     return DB::transaction(function () use ($data, $qrHash) {
         $validasi = $this->qrValidasi->validasiUntukPeminjaman($qrHash);
@@ -30,9 +30,15 @@ class PeminjamanService
             throw new \RuntimeException('Alat baru saja dipinjam oleh orang lain.');
         }
 
-        // Ambil info jam pelajaran dari config
-        $jamMulai   = config("sekolah.jam_pelajaran.{$data['jam_pelajaran_mulai']}");
-        $jamSelesai = config("sekolah.jam_pelajaran.{$data['jam_pelajaran_selesai']}");
+        // Ambil jam pelajaran dari Pengaturan, bukan config
+        $jamPelajaran = Pengaturan::getJamTersedia();
+        
+        $jamMulai   = $jamPelajaran[$data['jam_pelajaran_mulai'] - 1] ?? null;
+        $jamSelesai = $jamPelajaran[$data['jam_pelajaran_selesai'] - 1] ?? null;
+
+        if (!$jamMulai || !$jamSelesai) {
+            throw new \RuntimeException('Jam pelajaran tidak valid.');
+        }
 
         // Estimasi kembali = jam selesai pelajaran hari ini
         $estimasiKembali = now()->setTimeFromTimeString($jamSelesai['selesai']);
