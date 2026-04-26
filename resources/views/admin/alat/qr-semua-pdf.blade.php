@@ -76,21 +76,24 @@
             <div class="grid-row">
                 @foreach($row as $data)
                 <div class="grid-cell">
+                    @php $logo = \App\Models\Pengaturan::ambil('logo_sekolah'); @endphp
+                    @if($logo)
+                    <div style="margin-bottom: 8px;">
+                        <img src="{{ public_path('storage/' . $logo) }}"
+                            style="width: 48px; height: 48px; object-fit: contain; margin: 0 auto; display: block;">
+                    </div>
+                    @endif
                     <div class="qr-item">
                         <img src="data:{{ $data['qrMime'] }};base64,{{ $data['qrBase64'] }}" alt="QR">
                         <div class="nama">{{ $data['alat']->nama_alat }}</div>
 
-
                         {{-- ✅ Tambahkan nomor urut di sini juga --}}
                         @if($data['alat']->nomor_urut)
                         <div style="
-                            font-size: 10px;
-                            font-weight: bold;
-                            color: #1a1a1a;
-                            background: #f5f0e8;
-                            padding: 2px 4px;
-                            margin: 2px 0;
-                            border-radius: 2px;
+                            font-size: 11px; 
+                            font-weight: bold; 
+                            color: #64748b; 
+                            margin-bottom: 4px;
                         ">
                             #{{ $data['alat']->nomor_urut }}
                         </div>

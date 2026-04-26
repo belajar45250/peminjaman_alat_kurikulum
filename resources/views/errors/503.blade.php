@@ -1,0 +1,6 @@
+@extends('errors::minimal')
+@section('title', 'Sedang Dirawat')
+@section('code', '503')
+@section('message', 'Sedang Dirawat')
+@section('deskripsi', 'Maaf, Website sedang dalam masa pemeliharaan mohon bersabar dan tunggu server kembali normal.')
+@section('icon', 'fa-globe')

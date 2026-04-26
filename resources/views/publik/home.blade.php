@@ -79,11 +79,28 @@
     <div class="min-h-screen flex flex-col items-center justify-center px-5 py-24 text-center">
 
         {{-- Brand mark --}}
-        <div class="mb-10 relative">
-            <div class="w-16 h-16 bg-espresso flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-wrench text-paper text-xl"></i>
-            </div>
-            <div class="absolute -top-2 -right-2 w-5 h-5 border border-rule"></div>
+        <div class="mb-10 relative flex justify-center">
+            @php 
+                $logo = \App\Models\Pengaturan::ambil('logo_sekolah'); 
+            @endphp
+
+            @if($logo)
+                {{-- Tampilan jika LOGO ADA: Logo mengikuti bentuk asli, tanpa kotak hiasan --}}
+                <div class="mb-6">
+                    <img src="{{ asset('storage/' . $logo) }}" 
+                        alt="Logo Sekolah" 
+                        style="max-height: 80px; width: auto; object-fit: contain; display: block; margin: 0 auto;">
+                </div>
+            @else
+                {{-- Tampilan DEFAULT: Ikon Wrench dengan kotak hiasan --}}
+                <div class="relative">
+                    <div class="w-16 h-16 bg-espresso flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-wrench text-paper text-xl"></i>
+                    </div>
+                    {{-- Kotak border di kanan atas (Hanya muncul jika tidak ada logo) --}}
+                    <div class="absolute -top-2 -right-2 w-5 h-5 border border-rule"></div>
+                </div>
+            @endif
         </div>
 
         {{-- Heading --}}

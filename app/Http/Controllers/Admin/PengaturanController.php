@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Artisan; 
 use Illuminate\Validation\Rules\Password;
 
 class PengaturanController extends Controller
@@ -278,4 +279,18 @@ public function uploadLogo(Request $request)
 
         return back()->with('success', 'Logo berhasil dihapus.');
     }
+
+   
+        public function backupDanBersihkan()
+        {
+            try {
+                // Menjalankan command lewat code
+                Artisan::call('maintenance:clean');
+                $output = Artisan::output();
+
+                return back()->with('success', 'Maintenance Berhasil: ' . $output);
+            } catch (\Exception $e) {
+                return back()->with('error', 'Gagal: ' . $e->getMessage());
+            }
+        }
 }

@@ -1,0 +1,6 @@
+@extends('errors::minimal')
+@section('title', 'Sesi Berakhir')
+@section('code', '419')
+@section('message', 'Sesi Kadaluarsa')
+@section('deskripsi', 'Keamanan sesi kamu sudah berakhir karena terlalu lama diam. Silakan kembali ke beranda dan coba lagi.')
+@section('icon', 'fa-clock-rotate-left')

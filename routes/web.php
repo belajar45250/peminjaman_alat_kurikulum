@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 // ROOT → Halaman publik (scan QR)
 // ============================================================
 Route::get('/', [PeminjamanPublikController::class, 'home'])->name('home');
+Route::post('/report-error', [ErrorReportController::class, 'report'])->name('error.report');
 
 // ============================================================
 // RUTE PUBLIK — Peminjam (tanpa login)
@@ -76,9 +77,12 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/', [PeminjamanController::class, 'dashboard'])->name('dashboard');
 
     // Manajemen Alat
-    Route::resource('alat', AlatController::class);
     Route::get('alat/{alat}/qr-pdf', [AlatController::class, 'downloadQrPdf'])->name('alat.qr-pdf');
-    Route::post('alat/qr-semua', [AlatController::class, 'downloadSemuaQrPdf'])->name('alat.qr-semua');
+    Route::get('alat/qr-semua', [AlatController::class, 'downloadSemuaQrPdf'])->name('alat.qr-semua');
+    Route::get('alat/export-csv', [AlatController::class, 'exportCsv'])->name('alat.export');
+    Route::post('alat/import-csv', [AlatController::class, 'importCsv'])->name('alat.import');
+    Route::resource('alat', AlatController::class);
+    
 
     // Peminjaman
     Route::get('peminjaman', [PeminjamanController::class, 'index'])->name('peminjaman.index');
@@ -114,7 +118,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('pengaturan/hapus-jam', [PengaturanController::class, 'hapusJam'])->name('pengaturan.hapus-jam');
     Route::post('pengaturan/update-jam', [PengaturanController::class, 'updateJam'])->name('pengaturan.update-jam');
     Route::post('pengaturan/upload-logo', [PengaturanController::class, 'uploadLogo'])->name('pengaturan.upload-logo');
-Route::delete('pengaturan/hapus-logo', [PengaturanController::class, 'hapusLogo'])->name('pengaturan.hapus-logo');
+    Route::delete('pengaturan/hapus-logo', [PengaturanController::class, 'hapusLogo'])->name('pengaturan.hapus-logo');
+    Route::post('pengaturan/maintenance', [PengaturanController::class, 'backupDanBersihkan'])->name('pengaturan.maintenance');
 
     // History Kerusakan
     Route::prefix('history-kerusakan')->name('history-kerusakan.')->group(function () {

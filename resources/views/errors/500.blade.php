@@ -1,0 +1,6 @@
+@extends('errors::minimal')
+@section('title', 'Server Error')
+@section('code', '500')
+@section('message', 'Server Tumbang')
+@section('deskripsi', 'Sistem kami sedang mengalami masalah internal. Mohon klik tombol WhatsApp atau Email di bawah untuk memberitahu Developer agar segera diperbaiki.')
+@section('icon', 'fa-server')

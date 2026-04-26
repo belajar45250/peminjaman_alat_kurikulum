@@ -10,7 +10,26 @@
         <h1 class="font-serif text-ink text-3xl font-normal leading-none">Manajemen Alat</h1>
         <div class="mt-3 h-px w-10 bg-rule"></div>
     </div>
+
+    
     <div class="flex items-center gap-3">
+
+        {{-- Tombol Import --}}
+        <button onclick="document.getElementById('modalImportAlat').classList.remove('hidden')"
+                class="flex items-center gap-2 border border-rule text-label px-4 py-2.5
+                       font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                       hover:bg-sand transition-colors">
+            <i class="fas fa-file-import text-[0.5rem]"></i> Import
+        </button>
+
+        {{-- Tombol Export --}}
+        <a href="{{ route('admin.alat.export') }}"
+           class="flex items-center gap-2 border border-rule text-label px-4 py-2.5
+                  font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                  hover:bg-sand transition-colors">
+            <i class="fas fa-file-export text-[0.5rem]"></i> Export
+        </a>
+
         <a href="{{ route('admin.alat.create') }}"
            class="flex items-center gap-2 bg-espresso text-paper px-4 py-2.5
                   font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
@@ -174,6 +193,42 @@
         {{ $alat->links() }}
     </div>
     @endif
+</div>
+
+{{-- ══ MODAL IMPORT CSV ══ --}}
+<div id="modalImportAlat" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-paper border border-rule w-full max-w-sm mx-4">
+        <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+            <div>
+                <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Database</p>
+                <h3 class="font-serif text-ink text-lg font-normal mt-0.5">Import CSV Alat</h3>
+            </div>
+            <button onclick="document.getElementById('modalImportAlat').classList.add('hidden')"
+                    class="w-7 h-7 border border-rule flex items-center justify-center text-ghost hover:bg-espresso hover:text-paper transition-all">
+                <i class="fas fa-xmark text-[0.5rem]"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.alat.import') }}" enctype="multipart/form-data" class="px-6 py-6 space-y-5">
+            @csrf
+            <div>
+                <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">File CSV (.csv)</label>
+                <input type="file" name="file" accept=".csv" required
+                       class="w-full text-xs text-ghost file:mr-4 file:py-2 file:px-4 file:bg-cream file:border file:border-rule file:text-[0.55rem] file:uppercase">
+                
+                <div class="mt-4 border-l-2 border-rule bg-cream/50 px-3 py-2">
+                    <p class="font-sans text-[0.55rem] tracking-wide text-ghost leading-relaxed">
+                        <span class="font-bold text-ink">Urutan Kolom Wajib:</span><br>
+                        1. Nama Alat, 2. Nomor Urut, 3. Kode Alat, 4. Kategori, 5. Harga, 6. Kondisi, 7. Lokasi, 8. Deskripsi
+                    </p>
+                </div>
+            </div>
+            <div class="pt-2">
+                <button type="submit" class="w-full bg-espresso text-paper py-3 font-sans text-[0.58rem] font-bold uppercase tracking-[0.2em] hover:bg-ink">
+                    Mulai Import Data
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 @endsection

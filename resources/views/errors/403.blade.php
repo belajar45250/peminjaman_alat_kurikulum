@@ -1,0 +1,6 @@
+@extends('errors::minimal')
+@section('title', 'Akses Dilarang')
+@section('code', '403')
+@section('message', 'Akses Tertutup')
+@section('deskripsi', 'Kamu tidak memiliki izin yang cukup untuk memasuki area ini.')
+@section('icon', 'fa-lock')

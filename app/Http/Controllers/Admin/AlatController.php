@@ -12,6 +12,7 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\Image\EpsImageBackEnd;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use Illuminate\Support\Str;
 use BaconQrCode\Writer;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -167,5 +168,90 @@ class AlatController extends Controller
                   ->setPaper('a4', 'portrait');
 
         return $pdf->download('QR-Semua-Alat.pdf');
+    }
+
+
+
+
+    public function exportCsv()
+    {
+        $alat = Alat::all();
+        $fileName = 'data_alat_' . date('Y-m-d') . '.csv';
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        // Header Kolom di Excel
+        $columns = ['Nama Alat', 'Nomor Urut', 'Kode Alat', 'Kategori', 'Harga', 'Kondisi', 'Lokasi Penyimpanan', 'Deskripsi'];
+
+        $callback = function() use($alat, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns); // Tulis Header
+
+            foreach ($alat as $item) {
+                fputcsv($file, [
+                    $item->nama_alat,
+                    $item->nomor_urut,
+                    $item->kode_alat,
+                    $item->kategori,
+                    $item->harga,
+                    $item->kondisi,
+                    $item->lokasi_penyimpanan,
+                    $item->deskripsi
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * IMPORT CSV
+     */
+    public function importCsv(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt|max:2048',
+        ]);
+
+        $file = $request->file('file');
+        $handle = fopen($file->getPathname(), "r");
+
+        $header = true;
+        $count = 0;
+
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            if ($header) {
+                $header = false;
+                continue; // Lewati baris pertama karena itu adalah judul kolom
+            }
+
+            // Generate QR Hash (Berjaga-jaga jika di modelmu belum ada auto-generate)
+            $qrHash = hash('sha256', uniqid('', true) . Str::random(10));
+
+            // Simpan ke database
+            Alat::create([
+                'nama_alat'          => $data[0] ?? 'Alat Tanpa Nama',
+                'nomor_urut'         => $data[1] ?? null,
+                'kode_alat'          => $data[2] ?? strtoupper(Str::random(6)),
+                'kategori'           => $data[3] ?? null,
+                'harga'              => $data[4] ?? 0,
+                'kondisi'            => $data[5] ?? 'baik',
+                'lokasi_penyimpanan' => $data[6] ?? null,
+                'deskripsi'          => $data[7] ?? null,
+                'qr_hash'            => $qrHash, 
+                'status'             => 'tersedia'
+            ]);
+            $count++;
+        }
+        fclose($handle);
+
+        return back()->with('success', "$count data alat berhasil di-import!");
     }
 }

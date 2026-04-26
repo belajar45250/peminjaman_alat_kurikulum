@@ -1,0 +1,6 @@
+@extends('errors::minimal')
+@section('title', 'Halaman Tidak Ditemukan')
+@section('code', '404')
+@section('message', 'Jejak Terputus')
+@section('deskripsi', 'Maaf, halaman atau alat yang kamu cari tidak ditemukan atau mungkin sudah dihapus.')
+@section('icon', 'fa-magnifying-glass')

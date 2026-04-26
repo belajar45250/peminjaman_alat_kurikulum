@@ -1,0 +1,6 @@
+@extends('errors::minimal')
+@section('title', 'Terlalu Banyak Request')
+@section('code', '429')
+@section('message', 'Harap Tenang')
+@section('deskripsi', 'Kamu melakukan terlalu banyak aktivitas dalam waktu singkat. Mohon tunggu beberapa saat sebelum mencoba lagi.')
+@section('icon', 'fa-hand')
