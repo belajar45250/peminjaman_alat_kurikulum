@@ -223,35 +223,59 @@ class AlatController extends Controller
         $file = $request->file('file');
         $handle = fopen($file->getPathname(), "r");
 
-        $header = true;
-        $count = 0;
+        // 1. DETEKSI PEMISAH OTOMATIS (Koma atau Titik Koma)
+        $firstLine = fgets($handle);
+        $delimiter = strpos($firstLine, ';') !== false ? ';' : ',';
+        rewind($handle); // Kembalikan ke awal baris file setelah mengecek
 
-        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+        $header = true;
+        $countBaru = 0;
+        $countUpdate = 0;
+
+        // Gunakan $delimiter yang sudah dideteksi otomatis
+        while (($data = fgetcsv($handle, 1000, $delimiter)) !== FALSE) {
             if ($header) {
                 $header = false;
-                continue; // Lewati baris pertama karena itu adalah judul kolom
+                continue; // Lewati baris pertama (judul kolom)
             }
 
-            // Generate QR Hash (Berjaga-jaga jika di modelmu belum ada auto-generate)
-            $qrHash = hash('sha256', uniqid('', true) . Str::random(10));
+            // Gunakan trim() agar spasi kosong yang tidak sengaja terketik di Excel ikut hilang
+            $kodeAlat = !empty($data[2]) ? trim($data[2]) : strtoupper(Str::random(6));
 
-            // Simpan ke database
-            Alat::create([
-                'nama_alat'          => $data[0] ?? 'Alat Tanpa Nama',
-                'nomor_urut'         => $data[1] ?? null,
-                'kode_alat'          => $data[2] ?? strtoupper(Str::random(6)),
-                'kategori'           => $data[3] ?? null,
-                'harga'              => $data[4] ?? 0,
-                'kondisi'            => $data[5] ?? 'baik',
-                'lokasi_penyimpanan' => $data[6] ?? null,
-                'deskripsi'          => $data[7] ?? null,
-                'qr_hash'            => $qrHash, 
-                'status'             => 'tersedia'
-            ]);
-            $count++;
+            // Cek apakah alat dengan kode ini sudah ada
+            $alat = Alat::where('kode_alat', $kodeAlat)->first();
+
+            if ($alat) {
+                // UPDATE ALAT
+                $alat->update([
+                    'nama_alat'          => !empty($data[0]) ? trim($data[0]) : $alat->nama_alat,
+                    'nomor_urut'         => !empty($data[1]) ? trim($data[1]) : $alat->nomor_urut,
+                    'kategori'           => !empty($data[3]) ? trim($data[3]) : $alat->kategori,
+                    'harga'              => !empty($data[4]) ? trim($data[4]) : $alat->harga,
+                    'kondisi'            => !empty($data[5]) ? trim($data[5]) : $alat->kondisi,
+                    'lokasi_penyimpanan' => !empty($data[6]) ? trim($data[6]) : $alat->lokasi_penyimpanan,
+                    'deskripsi'          => !empty($data[7]) ? trim($data[7]) : $alat->deskripsi,
+                ]);
+                $countUpdate++;
+            } else {
+                // BUAT ALAT BARU
+                Alat::create([
+                    'nama_alat'          => !empty($data[0]) ? trim($data[0]) : 'Alat Tanpa Nama',
+                    'nomor_urut'         => !empty($data[1]) ? trim($data[1]) : null,
+                    'kode_alat'          => $kodeAlat,
+                    'kategori'           => !empty($data[3]) ? trim($data[3]) : null,
+                    'harga'              => !empty($data[4]) ? (int) trim($data[4]) : 0,
+                    'kondisi'            => !empty($data[5]) ? trim($data[5]) : 'baik',
+                    'lokasi_penyimpanan' => !empty($data[6]) ? trim($data[6]) : null,
+                    'deskripsi'          => !empty($data[7]) ? trim($data[7]) : null,
+                    'qr_hash'            => hash('sha256', uniqid('', true) . Str::random(10)), 
+                    'status'             => 'tersedia'
+                ]);
+                $countBaru++;
+            }
         }
         fclose($handle);
 
-        return back()->with('success', "$count data alat berhasil di-import!");
+        return back()->with('success', "Import Selesai! $countBaru alat ditambahkan, $countUpdate alat diperbarui.");
     }
 }
