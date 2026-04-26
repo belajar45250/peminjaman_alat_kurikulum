@@ -11,7 +11,6 @@
         <div class="mt-3 h-px w-10 bg-rule"></div>
     </div>
 
-    
     <div class="flex items-center gap-3">
 
         {{-- Tombol Import --}}
@@ -30,18 +29,21 @@
             <i class="fas fa-file-export text-[0.5rem]"></i> Export
         </a>
 
-        <a href="{{ route('admin.alat.create') }}"
-           class="flex items-center gap-2 bg-espresso text-paper px-4 py-2.5
-                  font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
-                  hover:bg-ink transition-colors">
-            <i class="fas fa-plus text-[0.5rem]"></i> Tambah Alat
-        </a>
+        {{-- Tombol Semua QR --}}
         <a href="{{ route('admin.alat.qr-semua') }}"
            class="flex items-center gap-2 border border-rule text-label px-4 py-2.5
                   font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
                   hover:bg-sand transition-colors"
            onclick="return confirm('Download QR semua alat?')">
             <i class="fas fa-qrcode text-[0.5rem]"></i> Semua QR
+        </a>
+
+        {{-- Tombol Tambah Alat (Primary CTA — paling kanan) --}}
+        <a href="{{ route('admin.alat.create') }}"
+           class="flex items-center gap-2 bg-espresso text-paper px-4 py-2.5
+                  font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                  hover:bg-ink transition-colors">
+            <i class="fas fa-plus text-[0.5rem]"></i> Tambah Alat
         </a>
     </div>
 </div>
@@ -214,7 +216,7 @@
                 <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">File CSV (.csv)</label>
                 <input type="file" name="file" accept=".csv" required
                        class="w-full text-xs text-ghost file:mr-4 file:py-2 file:px-4 file:bg-cream file:border file:border-rule file:text-[0.55rem] file:uppercase">
-                
+
                 <div class="mt-4 border-l-2 border-rule bg-cream/50 px-3 py-2">
                     <p class="font-sans text-[0.55rem] tracking-wide text-ghost leading-relaxed">
                         <span class="font-bold text-ink">Urutan Kolom Wajib:</span><br>
