@@ -33,7 +33,8 @@
                         <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">Nama Sekolah</label>
                         <div class="relative">
                             <input type="text" name="nama_sekolah" value="{{ \App\Models\Pengaturan::ambil('nama_sekolah') }}"
-                                   class="peer w-full border-b border-rule bg-transparent pb-2.5 pt-1 font-sans text-[0.88rem] text-ink outline-none transition-colors focus:border-ink">
+                                placeholder="Nama sekolah untuk header laporan"
+                                class="peer w-full border-b border-rule bg-transparent pb-2.5 pt-1 font-sans text-[0.88rem] text-ink outline-none transition-colors focus:border-ink">
                             <span class="absolute bottom-0 left-0 h-px w-0 bg-ink transition-all duration-[350ms] peer-focus:w-full"></span>
                         </div>
                     </div>
@@ -48,10 +49,14 @@
                         <div>
                             <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">Batas Waktu Peminjaman</label>
                             <div class="flex items-end gap-0 max-w-[160px]">
-                                <input type="number" name="batas_jam_pinjam" value="{{ \App\Models\Pengaturan::ambil('batas_jam_pinjam', 8) }}"
-                                       class="flex-1 border-b border-rule bg-transparent pb-2.5 pt-1 font-sans text-[0.88rem] text-ink outline-none focus:border-ink">
+                                <input type="number" name="batas_jam_pinjam"
+                                   value="{{ \App\Models\Pengaturan::ambil('batas_jam_pinjam', 8) }}"
+                                   min="1" max="72"
+                                   class="flex-1 border-b border-rule bg-transparent pb-2.5 pt-1
+                                          font-sans text-[0.88rem] text-ink outline-none focus:border-ink transition-colors">
                                 <span class="pb-2.5 pt-1 font-sans text-[0.78rem] text-ghost border-b border-rule pl-2">Jam</span>
                             </div>
+                            <p class="mt-1.5 font-sans text-[0.58rem] tracking-wide text-ghost">Waktu maksimal sebelum dianggap terlambat.</p>
                         </div>
                     </div>
                 </div>
@@ -188,17 +193,48 @@
                 <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Keamanan</p>
                 <h2 class="font-serif text-ink text-lg font-normal mt-0.5">Ganti Password</h2>
             </div>
-            <form method="POST" action="{{ route('admin.pengaturan.ganti-password') }}" class="px-6 py-6 space-y-4">
+            <form method="POST" action="{{ route('admin.pengaturan.ganti-password') }}" class="px-6 py-6 space-y-5">
                 @csrf
                 <div>
-                    <label class="block text-[0.55rem] font-bold uppercase text-label mb-1">Password Lama</label>
-                    <input type="password" name="password_lama" class="w-full border-b border-rule bg-transparent py-1 text-sm outline-none focus:border-ink">
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">Password Lama</label>
+                    <div class="relative">
+                        <input type="password" name="password_lama"
+                               placeholder="••••••••"
+                               class="peer w-full border-b {{ $errors->has('password_lama') ? 'border-red-600':'border-rule' }} bg-transparent pb-2.5 pt-1
+                                      font-sans text-[0.88rem] text-ink outline-none placeholder-ghost transition-colors focus:border-ink">
+                        <span class="absolute bottom-0 left-0 h-px w-0 bg-ink transition-all duration-[350ms] peer-focus:w-full"></span>
+                    </div>
+                    @error('password_lama') <p class="mt-1.5 font-sans text-[0.6rem] text-red-700">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-[0.55rem] font-bold uppercase text-label mb-1">Password Baru</label>
-                    <input type="password" name="password_baru" class="w-full border-b border-rule bg-transparent py-1 text-sm outline-none focus:border-ink">
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">Password Baru</label>
+                    <div class="relative">
+                        <input type="password" name="password_baru"
+                               placeholder="Min. 6 karakter"
+                               class="peer w-full border-b {{ $errors->has('password_baru') ? 'border-red-600':'border-rule' }} bg-transparent pb-2.5 pt-1
+                                      font-sans text-[0.88rem] text-ink outline-none placeholder-ghost transition-colors focus:border-ink">
+                        <span class="absolute bottom-0 left-0 h-px w-0 bg-ink transition-all duration-[350ms] peer-focus:w-full"></span>
+                    </div>
+                    @error('password_baru') <p class="mt-1.5 font-sans text-[0.6rem] text-red-700">{{ $message }}</p> @enderror
                 </div>
-                <button type="submit" class="w-full bg-espresso text-paper py-2.5 text-[0.58rem] font-bold uppercase tracking-widest hover:bg-ink">Update Password</button>
+                <div>
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">Konfirmasi Password Baru</label>
+                    <div class="relative">
+                        <input type="password" name="password_baru_confirmation"
+                               placeholder="Ulangi password baru"
+                               class="peer w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                      font-sans text-[0.88rem] text-ink outline-none placeholder-ghost transition-colors focus:border-ink">
+                        <span class="absolute bottom-0 left-0 h-px w-0 bg-ink transition-all duration-[350ms] peer-focus:w-full"></span>
+                    </div>
+                </div>
+                <div class="pt-2">
+                    <button type="submit"
+                        class="flex items-center gap-2 border border-espresso text-espresso px-6 py-3
+                               font-sans text-[0.6rem] font-semibold tracking-[0.28em] uppercase
+                               hover:bg-espresso hover:text-paper transition-all active:scale-[0.99]">
+                        <i class="fas fa-key text-[0.5rem]"></i> Ubah Password
+                    </button>
+                </div>
             </form>
         </div>
 
@@ -214,7 +250,18 @@
                     <p class="text-[0.5rem] font-bold uppercase text-ghost mb-2">Tingkat {{ $tingkat + 1 }}</p>
                     <div class="flex flex-wrap gap-2">
                         @foreach($group as $kelas)
-                        <span class="border border-rule px-2 py-1 text-[0.7rem] bg-cream/50">{{ $kelas }}</span>
+                        <div class="flex items-center gap-1.5 border border-rule bg-cream/50 px-3 py-1.5 group/kelas">
+                            <span class="font-sans text-[0.72rem] text-dim">{{ $kelas }}</span>
+                            <form method="POST" action="{{ route('admin.pengaturan.hapus-kelas') }}"
+                                onsubmit="return confirm('Hapus kelas {{ $kelas }}?')">
+                                @csrf
+                                <input type="hidden" name="nama_kelas" value="{{ $kelas }}">
+                                <button type="submit"
+                                        class="text-ghost hover:text-red-700 transition-colors opacity-0 group-hover/kelas:opacity-100">
+                                    <i class="fas fa-xmark text-[0.5rem]"></i>
+                                </button>
+                            </form>
+                        </div>
                         @endforeach
                     </div>
                 </div>
