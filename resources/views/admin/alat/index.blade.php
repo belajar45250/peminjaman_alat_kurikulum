@@ -187,15 +187,54 @@
             </tbody>
         </table>
     </div>
+    {{-- Pagination Custom Aesthetic --}}
     @if($alat->hasPages())
-    <div class="px-5 py-4 border-t border-rule/60 flex items-center justify-between">
-        <p class="font-sans text-[0.6rem] tracking-wide text-ghost">
-            Menampilkan {{ $alat->firstItem() }}–{{ $alat->lastItem() }} dari {{ $alat->total() }} data
+    <div class="px-6 py-5 border-t border-rule/60 flex items-center justify-between bg-paper">
+        {{-- Info Status --}}
+        <p class="font-sans text-[0.55rem] font-medium tracking-[0.15em] uppercase text-ghost">
+            Data <span class="text-ink">{{ $alat->firstItem() }}</span> sampai <span class="text-ink">{{ $alat->lastItem() }}</span> dari <span class="text-ink">{{ $alat->total() }}</span> total alat
         </p>
-        {{ $alat->links() }}
+
+        {{-- Navigasi Angka --}}
+        <div class="flex items-center gap-1.5">
+            {{-- Tombol Previous --}}
+            @if ($alat->onFirstPage())
+                <span class="w-8 h-8 flex items-center justify-center border border-rule/30 text-ghost/40 cursor-not-allowed">
+                    <i class="fas fa-chevron-left text-[0.5rem]"></i>
+                </span>
+            @else
+                <a href="{{ $alat->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center border border-rule text-ghost hover:bg-espresso hover:text-paper hover:border-espresso transition-all">
+                    <i class="fas fa-chevron-left text-[0.5rem]"></i>
+                </a>
+            @endif
+
+            {{-- Loop Angka Halaman --}}
+            @foreach ($alat->getUrlRange(max(1, $alat->currentPage() - 1), min($alat->lastPage(), $alat->currentPage() + 1)) as $page => $url)
+                @if ($page == $alat->currentPage())
+                    <span class="w-8 h-8 flex items-center justify-center bg-espresso text-paper font-sans text-[0.65rem] font-bold shadow-sm">
+                        {{ $page }}
+                    </span>
+                @else
+                    <a href="{{ $url }}" class="w-8 h-8 flex items-center justify-center border border-rule text-ink font-sans text-[0.65rem] hover:bg-sand transition-all">
+                        {{ $page }}
+                    </a>
+                @endif
+            @endforeach
+
+            {{-- Tombol Next --}}
+            @if ($alat->hasMorePages())
+                <a href="{{ $alat->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center border border-rule text-ghost hover:bg-espresso hover:text-paper hover:border-espresso transition-all">
+                    <i class="fas fa-chevron-right text-[0.5rem]"></i>
+                </a>
+            @else
+                <span class="w-8 h-8 flex items-center justify-center border border-rule/30 text-ghost/40 cursor-not-allowed">
+                    <i class="fas fa-chevron-right text-[0.5rem]"></i>
+                </span>
+            @endif
+        </div>
     </div>
     @endif
-</div>
+
 
 {{-- ══ MODAL IMPORT CSV ══ --}}
 <div id="modalImportAlat" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
