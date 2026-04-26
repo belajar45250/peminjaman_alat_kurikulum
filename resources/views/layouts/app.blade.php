@@ -56,11 +56,23 @@
                 <i class="fas fa-bars text-paper/70 text-sm"></i>
             </button>
 
-            {{-- Brand --}}
+            {{-- Ganti bagian brand di topbar --}}
             <div class="flex items-center gap-3 flex-shrink-0">
-                <div class="w-7 h-7 border border-white/20 flex items-center justify-center">
-                    <i class="fas fa-wrench text-paper text-[0.5rem]"></i>
+                @php $logo = \App\Models\Pengaturan::ambil('logo_sekolah'); @endphp
+
+                {{-- Logo atau ikon default --}}
+                <div class="w-8 h-8 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    @if($logo)
+                        <img src="{{ asset('storage/' . $logo) }}"
+                            alt="Logo"
+                            class="w-full h-full object-contain">
+                    @else
+                        <div class="w-7 h-7 border border-white/20 flex items-center justify-center">
+                            <i class="fas fa-wrench text-paper text-[0.5rem]"></i>
+                        </div>
+                    @endif
                 </div>
+
                 <div class="hidden sm:block">
                     <h1 class="font-serif text-paper text-[0.9rem] font-normal leading-none tracking-[0.15em] uppercase">
                         Sistem Peminjaman

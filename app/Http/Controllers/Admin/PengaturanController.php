@@ -8,6 +8,7 @@ use App\Models\Pengaturan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
 class PengaturanController extends Controller
@@ -239,5 +240,42 @@ class PengaturanController extends Controller
         auth()->user()->update(['password' => Hash::make($request->password_baru)]);
 
         return back()->with('success', 'Password berhasil diubah.');
+    }
+
+    // Tambahkan di PengaturanController.php
+
+public function uploadLogo(Request $request)
+{
+    $request->validate([
+        'logo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
+    ], [
+        'logo.required' => 'File logo wajib dipilih.',
+        'logo.image'    => 'File harus berupa gambar.',
+        'logo.max'      => 'Ukuran logo maksimal 2MB.',
+    ]);
+
+    // Hapus logo lama jika ada
+    $logoLama = Pengaturan::ambil('logo_sekolah');
+    if ($logoLama && Storage::disk('public')->exists($logoLama)) {
+        Storage::disk('public')->delete($logoLama);
+    }
+
+    // Simpan logo baru
+    $path = $request->file('logo')->store('logo', 'public');
+    Pengaturan::simpan('logo_sekolah', $path);
+
+    return back()->with('success', 'Logo berhasil diupload.');
+}
+
+    public function hapusLogo()
+    {
+        $logoLama = Pengaturan::ambil('logo_sekolah');
+        if ($logoLama && Storage::disk('public')->exists($logoLama)) {
+            Storage::disk('public')->delete($logoLama);
+        }
+
+        Pengaturan::simpan('logo_sekolah', null);
+
+        return back()->with('success', 'Logo berhasil dihapus.');
     }
 }

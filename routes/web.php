@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PengaturanController;
 use App\Http\Controllers\Admin\HistoryKerusakanController;
 use App\Http\Controllers\Admin\NotifikasiController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\ErrorReportController;
 use App\Http\Controllers\Publik\PeminjamanPublikController;
 use App\Http\Controllers\OfflineController;
 use Illuminate\Support\Facades\Route;
@@ -51,44 +52,6 @@ Route::prefix('pinjam')->name('publik.')->group(function () {
 Route::get('/offline', [OfflineController::class, 'index'])->name('offline');
 
 
-// ============================================================
-// TEST NOTIFIKASI — HAPUS SETELAH SELESAI TEST
-// ============================================================
-Route::get('/test-notif-keterlambatan', function () {
-    $updated = \App\Models\Peminjaman::where('status', 'dipinjam')
-        ->update(['estimasi_kembali' => now()->subHour()]);
- 
-    $sekarang  = now();
-    $terlambat = \App\Models\Peminjaman::where('status', 'dipinjam')
-        ->where('estimasi_kembali', '<', $sekarang)
-        ->whereDoesntHave('notifikasiTerlambat')
-        ->get();
- 
-    $dibuat = 0;
-    foreach ($terlambat as $p) {
-        $selisih = (int) $sekarang->diffInMinutes($p->estimasi_kembali);
-        $jam     = floor($selisih / 60);
-        $menit   = $selisih % 60;
-        $durasi  = $jam > 0 ? "{$jam} jam {$menit} menit" : "{$menit} menit";
- 
-        \App\Models\Notifikasi::create([
-            'peminjaman_id' => $p->id,
-            'judul'         => "Keterlambatan: {$p->nama_alat_snapshot}",
-            'pesan'         => "{$p->nama_peminjam} ({$p->kelas}) terlambat {$durasi}. Harusnya kembali pukul {$p->estimasi_kembali->format('H:i')}.",
-            'tipe'          => 'terlambat',
-            'sudah_dibaca'  => false,
-        ]);
-        $dibuat++;
-    }
- 
-    return response()->json([
-        'peminjaman_diupdate' => $updated,
-        'notifikasi_dibuat'   => $dibuat,
-        'total_notif_db'      => \App\Models\Notifikasi::count(),
-        'notif_belum_dibaca'  => \App\Models\Notifikasi::where('sudah_dibaca', false)->count(),
-        'detail'              => \App\Models\Notifikasi::latest()->take(5)->get(),
-    ]);
-})->middleware('auth');
 
 // ============================================================
 // RUTE AUTH
@@ -101,6 +64,9 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [LoginController::class, 'logout'])
      ->name('logout')
      ->middleware('auth');
+
+
+
 
 // ============================================================
 // RUTE ADMIN — Memerlukan login
@@ -147,6 +113,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('pengaturan/tambah-jam', [PengaturanController::class, 'tambahJam'])->name('pengaturan.tambah-jam');
     Route::post('pengaturan/hapus-jam', [PengaturanController::class, 'hapusJam'])->name('pengaturan.hapus-jam');
     Route::post('pengaturan/update-jam', [PengaturanController::class, 'updateJam'])->name('pengaturan.update-jam');
+    Route::post('pengaturan/upload-logo', [PengaturanController::class, 'uploadLogo'])->name('pengaturan.upload-logo');
+Route::delete('pengaturan/hapus-logo', [PengaturanController::class, 'hapusLogo'])->name('pengaturan.hapus-logo');
 
     // History Kerusakan
     Route::prefix('history-kerusakan')->name('history-kerusakan.')->group(function () {
