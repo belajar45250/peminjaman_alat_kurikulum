@@ -168,10 +168,20 @@
                 @if($logoPath)
                     <div class="mb-5">
                         <img src="{{ asset('storage/' . $logoPath) }}" class="mx-auto" style="max-height: 100px; width: auto; object-fit: contain;">
-                        <form method="POST" action="{{ route('admin.pengaturan.hapus-logo') }}" class="mt-4">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="text-red-700 text-[0.52rem] font-bold uppercase tracking-widest hover:underline">Hapus Logo</button>
-                        </form>
+                        <div>
+                            <p class="font-sans text-[0.65rem] text-ink font-medium mb-1">Logo aktif</p>
+                            <p class="font-sans text-[0.58rem] tracking-wide text-ghost mb-3">{{ basename($logoPath) }}</p>
+                            <form method="POST" action="{{ route('admin.pengaturan.hapus-logo') }}"
+                                onsubmit="return confirm('Hapus logo?')">
+                                @csrf @method('DELETE')
+                                <button type="submit"
+                                        class="flex items-center gap-1.5 border border-red-200 text-red-700 px-3 py-1.5
+                                            font-sans text-[0.52rem] font-semibold tracking-[0.15em] uppercase
+                                            hover:bg-red-50 transition-colors">
+                                    <i class="fas fa-trash text-[0.45rem]"></i> Hapus Logo
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 @else
                     <div class="mb-5 py-6 border border-dashed border-rule bg-cream/30">
