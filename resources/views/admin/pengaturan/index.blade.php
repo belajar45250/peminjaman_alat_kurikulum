@@ -264,8 +264,244 @@
 </div>
 
 {{-- MODALS --}}
-{{-- (Sertakan semua modal Tambah User, Tambah Kelas, Tambah Jam yang sudah ada di file asli kamu di sini) --}}
 
+
+{{-- ══ MODAL TAMBAH JAM ══ --}}
+<div id="modalTambahJam" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-paper border border-rule w-full max-w-sm mx-4">
+        <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+            <div>
+                <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Jadwal</p>
+                <h3 class="font-serif text-ink text-lg font-normal mt-0.5">Tambah Jam Pelajaran</h3>
+            </div>
+            <button onclick="document.getElementById('modalTambahJam').classList.add('hidden')"
+                    class="w-7 h-7 border border-rule flex items-center justify-center text-ghost
+                           hover:bg-espresso hover:text-paper transition-all">
+                <i class="fas fa-xmark text-[0.5rem]"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.pengaturan.tambah-jam') }}" class="px-6 py-6 space-y-5">
+            @csrf
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                        Jam Mulai
+                    </label>
+                    <input type="time" name="mulai" required
+                           class="w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none focus:border-ink transition-colors">
+                </div>
+                <div>
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                        Jam Selesai
+                    </label>
+                    <input type="time" name="selesai" required
+                           class="w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none focus:border-ink transition-colors">
+                </div>
+            </div>
+            <p class="font-sans text-[0.58rem] tracking-wide text-ghost">
+                Jam akan diurutkan otomatis dan diberi nomor ulang.
+            </p>
+            <div class="pt-2 flex gap-3">
+                <button type="submit"
+                    class="flex items-center gap-2 bg-espresso text-paper px-5 py-2.5
+                           font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                           hover:bg-ink transition-colors">
+                    <i class="fas fa-check text-[0.45rem]"></i> Simpan
+                </button>
+                <button type="button"
+                        onclick="document.getElementById('modalTambahJam').classList.add('hidden')"
+                        class="border border-rule text-label px-5 py-2.5
+                               font-sans text-[0.58fransk] font-semibold tracking-[0.22em] uppercase
+                               hover:bg-sand transition-colors">
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{{-- ══ MODAL EDIT JAM ══ --}}
+<div id="modalEditJam" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-paper border border-rule w-full max-w-sm mx-4">
+        <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+            <div>
+                <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Jadwal</p>
+                <h3 class="font-serif text-ink text-lg font-normal mt-0.5">Edit Jam ke-<span id="editJamLabel"></span></h3>
+            </div>
+            <button onclick="document.getElementById('modalEditJam').classList.add('hidden')"
+                    class="w-7 h-7 border border-rule flex items-center justify-center text-ghost
+                           hover:bg-espresso hover:text-paper transition-all">
+                <i class="fas fa-xmark text-[0.5rem]"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.pengaturan.update-jam') }}" class="px-6 py-6 space-y-5">
+            @csrf
+            <input type="hidden" name="ke" id="editJamKe">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                        Jam Mulai
+                    </label>
+                    <input type="time" name="mulai" id="editJamMulai" required
+                           class="w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none focus:border-ink transition-colors">
+                </div>
+                <div>
+                    <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                        Jam Selesai
+                    </label>
+                    <input type="time" name="selesai" id="editJamSelesai" required
+                           class="w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none focus:border-ink transition-colors">
+                </div>
+            </div>
+            <div class="pt-2 flex gap-3">
+                <button type="submit"
+                    class="flex items-center gap-2 bg-espresso text-paper px-5 py-2.5
+                           font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                           hover:bg-ink transition-colors">
+                    <i class="fas fa-check text-[0.45rem]"></i> Simpan
+                </button>
+                <button type="button"
+                        onclick="document.getElementById('modalEditJam').classList.add('hidden')"
+                        class="border border-rule text-label px-5 py-2.5
+                               font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                               hover:bg-sand transition-colors">
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- ══ MODAL TAMBAH KELAS ══ --}}
+<div id="modalTambahKelas" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-paper border border-rule w-full max-w-sm mx-4">
+        <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+            <div>
+                <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Kelas</p>
+                <h3 class="font-serif text-ink text-lg font-normal mt-0.5">Tambah Kelas</h3>
+            </div>
+            <button onclick="document.getElementById('modalTambahKelas').classList.add('hidden')"
+                    class="w-7 h-7 border border-rule flex items-center justify-center text-ghost
+                           hover:bg-espresso hover:text-paper transition-all">
+                <i class="fas fa-xmark text-[0.5rem]"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.pengaturan.tambah-kelas') }}" class="px-6 py-6 space-y-5">
+            @csrf
+            <div>
+                <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                    Nama Kelas
+                </label>
+                <div class="relative">
+                    <input type="text" name="nama_kelas" placeholder="Contoh: X RPL 3" required
+                           class="peer w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none placeholder-ghost
+                                  transition-colors focus:border-ink">
+                    <span class="absolute bottom-0 left-0 h-px w-0 bg-ink transition-all duration-[350ms] peer-focus:w-full"></span>
+                </div>
+            </div>
+            <div>
+                <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">
+                    Masukkan ke Tingkat
+                </label>
+                <select name="tingkat"
+                        class="w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                               font-sans text-[0.88rem] text-ink outline-none focus:border-ink transition-colors"
+                        required>
+                    @foreach($daftarKelas as $i => $group)
+                        <option value="{{ $i }}">Tingkat {{ $i + 1 }} ({{ count($group) }} kelas)</option>
+                    @endforeach
+                    <option value="{{ count($daftarKelas) }}">+ Buat Tingkat Baru</option>
+                </select>
+            </div>
+            <div class="pt-2 flex gap-3">
+                <button type="submit"
+                    class="flex items-center gap-2 bg-espresso text-paper px-5 py-2.5
+                           font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                           hover:bg-ink transition-colors">
+                    <i class="fas fa-check text-[0.45rem]"></i> Simpan
+                </button>
+                <button type="button"
+                        onclick="document.getElementById('modalTambahKelas').classList.add('hidden')"
+                        class="border border-rule text-label px-5 py-2.5
+                               font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                               hover:bg-sand transition-colors">
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{{-- Modal Tambah User --}}
+<div id="modalTambahUser" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-paper border border-rule w-full max-w-md mx-4">
+        <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+            <div>
+                <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Pengguna</p>
+                <h3 class="font-serif text-ink text-lg font-normal mt-0.5">Tambah Akun Admin</h3>
+            </div>
+            <button onclick="document.getElementById('modalTambahUser').classList.add('hidden')"
+                    class="w-7 h-7 border border-rule flex items-center justify-center text-ghost hover:bg-espresso hover:text-paper transition-all">
+                <i class="fas fa-xmark text-[0.5rem]"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('admin.pengaturan.tambah-user') }}" class="px-6 py-6 space-y-5">
+            @csrf
+            <div>
+                <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">Nama Lengkap</label>
+                <div class="relative">
+                    <input type="text" name="name" placeholder="Nama admin" required
+                           class="peer w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none placeholder-ghost transition-colors focus:border-ink">
+                    <span class="absolute bottom-0 left-0 h-px w-0 bg-ink transition-all duration-[350ms] peer-focus:w-full"></span>
+                </div>
+            </div>
+            <div>
+                <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">Username</label>
+                <div class="flex items-end gap-0">
+                    <span class="pb-2.5 pt-1 font-sans text-[0.82rem] text-ghost border-b border-rule pr-2">@</span>
+                    <div class="relative flex-1">
+                        <input type="text" name="username" placeholder="username" required
+                               class="peer w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                      font-sans text-[0.88rem] text-ink outline-none placeholder-ghost transition-colors focus:border-ink">
+                        <span class="absolute bottom-0 left-0 h-px w-0 bg-ink transition-all duration-[350ms] peer-focus:w-full"></span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label class="block font-sans text-[0.55rem] font-semibold tracking-[0.28em] uppercase text-label mb-2.5">Password</label>
+                <div class="relative">
+                    <input type="password" name="password" placeholder="Min. 6 karakter huruf + angka" required
+                           class="peer w-full border-b border-rule bg-transparent pb-2.5 pt-1
+                                  font-sans text-[0.88rem] text-ink outline-none placeholder-ghost transition-colors focus:border-ink">
+                    <span class="absolute bottom-0 left-0 h-px w-0 bg-ink transition-all duration-[350ms] peer-focus:w-full"></span>
+                </div>
+            </div>
+            <div class="pt-2 flex gap-3">
+                <button type="submit"
+                    class="flex items-center gap-2 bg-espresso text-paper px-5 py-2.5
+                           font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                           hover:bg-ink transition-colors">
+                    <i class="fas fa-check text-[0.45rem]"></i> Simpan
+                </button>
+                <button type="button"
+                        onclick="document.getElementById('modalTambahUser').classList.add('hidden')"
+                        class="flex items-center gap-2 border border-rule text-label px-5 py-2.5
+                               font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                               hover:bg-sand transition-colors">
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -293,5 +529,40 @@
         const el = document.getElementById(id);
         el?.addEventListener('click', e => { if (e.target === el) el.classList.add('hidden'); });
     });
+</script>
+<script>
+    // ── Modal helpers ──
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+        el.addEventListener('click', e => {
+            if (e.target === el) el.classList.add('hidden');
+        });
+    });
+
+    // ── Edit Jam ──
+    function bukaEditJam(ke, mulai, selesai) {
+        document.getElementById('editJamKe').value      = ke;
+        document.getElementById('editJamMulai').value   = mulai;
+        document.getElementById('editJamSelesai').value = selesai;
+        document.getElementById('editJamLabel').textContent = ke;
+        document.getElementById('modalEditJam').classList.remove('hidden');
+    }
+
+    // ── Tutup modal klik di luar ──
+    ['modalTambahUser','modalTambahKelas','modalTambahJam','modalEditJam'].forEach(id => {
+        const el = document.getElementById(id);
+        el?.addEventListener('click', e => { if (e.target === el) el.classList.add('hidden'); });
+    });
+
+    // ── Preview simulasi denda (sudah ada) ──
+    function updatePreview() {
+        const h = 500000;
+        const r = parseFloat(document.getElementById('inputRusak').value)  || 0;
+        const l = parseFloat(document.getElementById('inputHilang').value) || 0;
+        document.getElementById('previewRusak').textContent  = 'Rp ' + Math.round(h * r / 100).toLocaleString('id-ID');
+        document.getElementById('previewHilang').textContent = 'Rp ' + Math.round(h * l / 100).toLocaleString('id-ID');
+    }
+    document.getElementById('inputRusak')?.addEventListener('input', updatePreview);
+    document.getElementById('inputHilang')?.addEventListener('input', updatePreview);
+    updatePreview();
 </script>
 @endsection
