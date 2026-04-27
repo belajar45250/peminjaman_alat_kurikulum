@@ -150,7 +150,8 @@
                 </table>
             </div>
         </div>
-    </div>
+
+    </div>{{-- END KOLOM KIRI --}}
 
     {{-- ========================================== --}}
     {{-- KOLOM KANAN (Sempit: col-span-2)           --}}
@@ -162,78 +163,78 @@
             <div class="border-b border-rule px-6 py-4">
                 <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Tampilan</p>
                 <h2 class="font-serif text-ink text-lg font-normal mt-0.5">Logo Sekolah</h2>
-                </div>
-                <div class="px-6 py-6">
-
-                    {{-- Preview logo saat ini --}}
-                    @php $logoPath = \App\Models\Pengaturan::ambil('logo_sekolah'); @endphp
-
-                    @if($logoPath)
-                    <div class="mb-5 flex items-center gap-5">
-                        <div class="w-24 h-24 border border-rule bg-cream/50 flex items-center justify-center overflow-hidden">
-                            <img src="{{ asset('storage/' . $logoPath) }}"
-                                alt="Logo"
-                                class="max-w-full max-h-full object-contain p-2">
-                        </div>
-                        <div>
-                            <p class="font-sans text-[0.65rem] text-ink font-medium mb-1">Logo aktif</p>
-                            <p class="font-sans text-[0.58rem] tracking-wide text-ghost mb-3">
-                                {{ basename($logoPath) }}
-                            </p>
-                            <form method="POST" action="{{ route('admin.pengaturan.hapus-logo') }}"
-                                onsubmit="return confirm('Hapus logo?')">
-                                @csrf @method('DELETE')
-                                <button type="submit"
-                                        class="flex items-center gap-1.5 border border-red-200 text-red-700 px-3 py-1.5
-                                            font-sans text-[0.52rem] font-semibold tracking-[0.15em] uppercase
-                                            hover:bg-red-50 transition-colors">
-                                    <i class="fas fa-trash text-[0.45rem]"></i> Hapus Logo
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    @else
-                    <div class="mb-5 flex items-center gap-4 border border-dashed border-rule bg-cream/30 px-5 py-6">
-                        <div class="w-14 h-14 bg-sand border border-rule flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-image text-ghost text-lg"></i>
-                        </div>
-                        <div>
-                            <p class="font-sans text-[0.65rem] text-dim font-medium mb-0.5">Belum ada logo</p>
-                            <p class="font-sans text-[0.58rem] tracking-wide text-ghost">
-                                Upload logo sekolah untuk ditampilkan di header dan QR Code.
-                            </p>
-                        </div>
-                    </div>
-                    @endif
-
-                    {{-- Form upload --}}
-                    <form method="POST" action="{{ route('admin.pengaturan.upload-logo') }}"
-                        enctype="multipart/form-data">
-                        @csrf
-                        <div class="mb-4">
-                            <label class="block font-sans text-[0.52rem] font-semibold tracking-[0.25em] uppercase text-label mb-2.5">
-                                {{ $logoPath ? 'Ganti Logo' : 'Upload Logo' }}
-                            </label>
-                            <input type="file" name="logo" accept="image/*"
-                                class="w-full font-sans text-[0.78rem] text-dim
-                                        file:mr-4 file:py-2 file:px-4 file:border file:border-rule
-                                        file:bg-cream file:text-label file:font-sans file:text-[0.55rem]
-                                        file:tracking-[0.15em] file:uppercase file:cursor-pointer
-                                        hover:file:bg-sand file:transition-colors">
-                            <p class="mt-1.5 font-sans text-[0.58rem] tracking-wide text-ghost">
-                                Format: JPG, PNG, WEBP, SVG. Maks 2MB. Disarankan ukuran persegi (1:1).
-                            </p>
-                        </div>
-                        <button type="submit"
-                            class="flex items-center gap-2 bg-espresso text-paper px-5 py-2.5
-                                font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
-                                hover:bg-ink transition-colors">
-                            <i class="fas fa-upload text-[0.5rem]"></i>
-                            {{ $logoPath ? 'Ganti Logo' : 'Upload Logo' }}
-                        </button>
-                    </form>
-                </div>
             </div>
+            <div class="px-6 py-6">
+
+                {{-- Preview logo saat ini --}}
+                @php $logoPath = \App\Models\Pengaturan::ambil('logo_sekolah'); @endphp
+
+                @if($logoPath)
+                <div class="mb-5 flex items-center gap-5">
+                    <div class="w-24 h-24 border border-rule bg-cream/50 flex items-center justify-center overflow-hidden">
+                        <img src="{{ asset('storage/' . $logoPath) }}"
+                            alt="Logo"
+                            class="max-w-full max-h-full object-contain p-2">
+                    </div>
+                    <div>
+                        <p class="font-sans text-[0.65rem] text-ink font-medium mb-1">Logo aktif</p>
+                        <p class="font-sans text-[0.58rem] tracking-wide text-ghost mb-3">
+                            {{ basename($logoPath) }}
+                        </p>
+                        <form method="POST" action="{{ route('admin.pengaturan.hapus-logo') }}"
+                            onsubmit="return confirm('Hapus logo?')">
+                            @csrf @method('DELETE')
+                            <button type="submit"
+                                    class="flex items-center gap-1.5 border border-red-200 text-red-700 px-3 py-1.5
+                                        font-sans text-[0.52rem] font-semibold tracking-[0.15em] uppercase
+                                        hover:bg-red-50 transition-colors">
+                                <i class="fas fa-trash text-[0.45rem]"></i> Hapus Logo
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @else
+                <div class="mb-5 flex items-center gap-4 border border-dashed border-rule bg-cream/30 px-5 py-6">
+                    <div class="w-14 h-14 bg-sand border border-rule flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-image text-ghost text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="font-sans text-[0.65rem] text-dim font-medium mb-0.5">Belum ada logo</p>
+                        <p class="font-sans text-[0.58rem] tracking-wide text-ghost">
+                            Upload logo sekolah untuk ditampilkan di header dan QR Code.
+                        </p>
+                    </div>
+                </div>
+                @endif
+
+                {{-- Form upload --}}
+                <form method="POST" action="{{ route('admin.pengaturan.upload-logo') }}"
+                    enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-4">
+                        <label class="block font-sans text-[0.52rem] font-semibold tracking-[0.25em] uppercase text-label mb-2.5">
+                            {{ $logoPath ? 'Ganti Logo' : 'Upload Logo' }}
+                        </label>
+                        <input type="file" name="logo" accept="image/*"
+                            class="w-full font-sans text-[0.78rem] text-dim
+                                    file:mr-4 file:py-2 file:px-4 file:border file:border-rule
+                                    file:bg-cream file:text-label file:font-sans file:text-[0.55rem]
+                                    file:tracking-[0.15em] file:uppercase file:cursor-pointer
+                                    hover:file:bg-sand file:transition-colors">
+                        <p class="mt-1.5 font-sans text-[0.58rem] tracking-wide text-ghost">
+                            Format: JPG, PNG, WEBP, SVG. Maks 2MB. Disarankan ukuran persegi (1:1).
+                        </p>
+                    </div>
+                    <button type="submit"
+                        class="flex items-center gap-2 bg-espresso text-paper px-5 py-2.5
+                            font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                            hover:bg-ink transition-colors">
+                        <i class="fas fa-upload text-[0.5rem]"></i>
+                        {{ $logoPath ? 'Ganti Logo' : 'Upload Logo' }}
+                    </button>
+                </form>
+            </div>
+        </div>
 
         {{-- 2. Ganti Password --}}
         <div class="bg-paper border border-rule">
@@ -340,10 +341,9 @@
                 @endforeach
             </ul>
         </div>
-    </div>
-    
-    {{-- 5. MAINTENANCE DATA (Letakkan tepat di paling bawah kolom kanan) --}}
-        <div class="bg-paper border border-rule shadow-sm">
+
+        {{-- 5. Maintenance Data --}}
+        <div class="bg-paper border border-rule">
             <div class="border-b border-rule px-6 py-4">
                 <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Sistem</p>
                 <h2 class="font-serif text-ink text-lg font-normal mt-0.5">Maintenance Data</h2>
@@ -358,8 +358,15 @@
                 </form>
             </div>
         </div>
-{{-- MODALS --}}
 
+    </div>{{-- END KOLOM KANAN --}}
+
+</div>{{-- END GRID --}}
+
+
+{{-- ══════════════════════════════ --}}
+{{-- MODALS                        --}}
+{{-- ══════════════════════════════ --}}
 
 {{-- ══ MODAL TAMBAH JAM ══ --}}
 <div id="modalTambahJam" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -408,7 +415,7 @@
                 <button type="button"
                         onclick="document.getElementById('modalTambahJam').classList.add('hidden')"
                         class="border border-rule text-label px-5 py-2.5
-                               font-sans text-[0.58fransk] font-semibold tracking-[0.22em] uppercase
+                               font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
                                hover:bg-sand transition-colors">
                     Batal
                 </button>
@@ -416,7 +423,6 @@
         </form>
     </div>
 </div>
-
 
 {{-- ══ MODAL EDIT JAM ══ --}}
 <div id="modalEditJam" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -533,8 +539,7 @@
     </div>
 </div>
 
-
-{{-- Modal Tambah User --}}
+{{-- ══ MODAL TAMBAH USER ══ --}}
 <div id="modalTambahUser" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
     <div class="bg-paper border border-rule w-full max-w-md mx-4">
         <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
@@ -597,6 +602,7 @@
         </form>
     </div>
 </div>
+
 @endsection
 
 @section('scripts')
@@ -608,8 +614,8 @@
         document.getElementById('previewRusak').textContent = 'Rp ' + Math.round(h * r / 100).toLocaleString('id-ID');
         document.getElementById('previewHilang').textContent = 'Rp ' + Math.round(h * l / 100).toLocaleString('id-ID');
     }
-    document.getElementById('inputRusak').addEventListener('input', updatePreview);
-    document.getElementById('inputHilang').addEventListener('input', updatePreview);
+    document.getElementById('inputRusak')?.addEventListener('input', updatePreview);
+    document.getElementById('inputHilang')?.addEventListener('input', updatePreview);
     updatePreview();
 
     function bukaEditJam(ke, mulai, selesai) {
@@ -624,40 +630,5 @@
         const el = document.getElementById(id);
         el?.addEventListener('click', e => { if (e.target === el) el.classList.add('hidden'); });
     });
-</script>
-<script>
-    // ── Modal helpers ──
-    document.querySelectorAll('.modal-overlay').forEach(el => {
-        el.addEventListener('click', e => {
-            if (e.target === el) el.classList.add('hidden');
-        });
-    });
-
-    // ── Edit Jam ──
-    function bukaEditJam(ke, mulai, selesai) {
-        document.getElementById('editJamKe').value      = ke;
-        document.getElementById('editJamMulai').value   = mulai;
-        document.getElementById('editJamSelesai').value = selesai;
-        document.getElementById('editJamLabel').textContent = ke;
-        document.getElementById('modalEditJam').classList.remove('hidden');
-    }
-
-    // ── Tutup modal klik di luar ──
-    ['modalTambahUser','modalTambahKelas','modalTambahJam','modalEditJam'].forEach(id => {
-        const el = document.getElementById(id);
-        el?.addEventListener('click', e => { if (e.target === el) el.classList.add('hidden'); });
-    });
-
-    // ── Preview simulasi denda (sudah ada) ──
-    function updatePreview() {
-        const h = 500000;
-        const r = parseFloat(document.getElementById('inputRusak').value)  || 0;
-        const l = parseFloat(document.getElementById('inputHilang').value) || 0;
-        document.getElementById('previewRusak').textContent  = 'Rp ' + Math.round(h * r / 100).toLocaleString('id-ID');
-        document.getElementById('previewHilang').textContent = 'Rp ' + Math.round(h * l / 100).toLocaleString('id-ID');
-    }
-    document.getElementById('inputRusak')?.addEventListener('input', updatePreview);
-    document.getElementById('inputHilang')?.addEventListener('input', updatePreview);
-    updatePreview();
 </script>
 @endsection
