@@ -4,47 +4,49 @@
 @section('content')
 
 {{-- Page Header --}}
-<div class="mb-8 flex items-end justify-between">
+<div class="mb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-5">
     <div>
         <p class="font-sans text-[0.55rem] font-semibold tracking-[0.35em] uppercase text-label mb-1">Inventaris</p>
         <h1 class="font-serif text-ink text-3xl font-normal leading-none">Manajemen Alat</h1>
         <div class="mt-3 h-px w-10 bg-rule"></div>
     </div>
 
-    <div class="flex items-center gap-3">
+    {{-- Container tombol dengan flex-wrap agar tidak ke pinggir (offsite) di HP --}}
+    <div class="flex flex-wrap items-center gap-2 md:gap-3">
 
         {{-- Tombol Import --}}
         <button onclick="document.getElementById('modalImportAlat').classList.remove('hidden')"
-                class="flex items-center gap-2 border border-rule text-label px-4 py-2.5
-                       font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+                class="flex items-center gap-2 border border-rule text-label px-3 py-2.5 md:px-4
+                       font-sans text-[0.55rem] md:text-[0.58rem] font-semibold tracking-[0.22em] uppercase
                        hover:bg-sand transition-colors">
             <i class="fas fa-file-import text-[0.5rem]"></i> Import
         </button>
 
         {{-- Tombol Export --}}
         <a href="{{ route('admin.alat.export') }}"
-           class="flex items-center gap-2 border border-rule text-label px-4 py-2.5
-                  font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+           class="flex items-center gap-2 border border-rule text-label px-3 py-2.5 md:px-4
+                  font-sans text-[0.55rem] md:text-[0.58rem] font-semibold tracking-[0.22em] uppercase
                   hover:bg-sand transition-colors">
             <i class="fas fa-file-export text-[0.5rem]"></i> Export
         </a>
 
         {{-- Tombol Semua QR --}}
         <a href="{{ route('admin.alat.qr-semua') }}"
-           class="flex items-center gap-2 border border-rule text-label px-4 py-2.5
-                  font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+           class="flex items-center gap-2 border border-rule text-label px-3 py-2.5 md:px-4
+                  font-sans text-[0.55rem] md:text-[0.58rem] font-semibold tracking-[0.22em] uppercase
                   hover:bg-sand transition-colors"
            onclick="return confirm('Download QR semua alat?')">
             <i class="fas fa-qrcode text-[0.5rem]"></i> Semua QR
         </a>
 
-        {{-- Tombol Tambah Alat (Primary CTA — paling kanan) --}}
+        {{-- Tombol Tambah Alat (Primary CTA — paling kanan/bawah) --}}
         <a href="{{ route('admin.alat.create') }}"
-           class="flex items-center gap-2 bg-espresso text-paper px-4 py-2.5
-                  font-sans text-[0.58rem] font-semibold tracking-[0.22em] uppercase
+           class="flex items-center gap-2 bg-espresso text-paper px-3 py-2.5 md:px-4
+                  font-sans text-[0.55rem] md:text-[0.58rem] font-semibold tracking-[0.22em] uppercase
                   hover:bg-ink transition-colors">
             <i class="fas fa-plus text-[0.5rem]"></i> Tambah Alat
         </a>
+
     </div>
 </div>
 
