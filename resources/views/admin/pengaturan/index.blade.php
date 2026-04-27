@@ -341,23 +341,23 @@
             </ul>
         </div>
     </div>
-    <div class="bg-paper border border-rule">
-    <div class="border-b border-rule px-6 py-4">
-        <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Sistem</p>
-        <h2 class="font-serif text-ink text-lg font-normal mt-0.5">Maintenance Data</h2>
-    </div>
-    <div class="px-6 py-6">
-        <p class="text-[0.65rem] text-ghost mb-4">Bersihkan data lama (>1 tahun) dan simpan ke file JSON.</p>
-        <form method="POST" action="{{ route('admin.pengaturan.maintenance') }}" onsubmit="return confirm('Jalankan maintenance?')">
-            @csrf
-            <button type="submit" class="w-full bg-espresso text-paper py-2.5 text-[0.58rem] font-bold uppercase tracking-widest hover:bg-ink transition-colors">
-                <i class="fas fa-database mr-2"></i> Jalankan Sekarang
-            </button>
-        </form>
-    </div>
-</div>
-</div>
-
+    
+    {{-- 5. MAINTENANCE DATA (Letakkan tepat di paling bawah kolom kanan) --}}
+        <div class="bg-paper border border-rule shadow-sm">
+            <div class="border-b border-rule px-6 py-4">
+                <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Sistem</p>
+                <h2 class="font-serif text-ink text-lg font-normal mt-0.5">Maintenance Data</h2>
+            </div>
+            <div class="px-6 py-6">
+                <p class="text-[0.65rem] text-ghost mb-4">Bersihkan data lama (>1 tahun) dan simpan ke file JSON.</p>
+                <form method="POST" action="{{ route('admin.pengaturan.maintenance') }}" onsubmit="return confirm('Jalankan maintenance?')">
+                    @csrf
+                    <button type="submit" class="w-full bg-espresso text-paper py-2.5 text-[0.58rem] font-bold uppercase tracking-widest hover:bg-ink transition-colors">
+                        <i class="fas fa-database mr-2"></i> Jalankan Sekarang
+                    </button>
+                </form>
+            </div>
+        </div>
 {{-- MODALS --}}
 
 
