@@ -130,7 +130,11 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::post('/{historyKerusakan}/tindak-lanjut', [HistoryKerusakanController::class, 'updateTindakLanjut'])->name('tindak-lanjut');
         Route::post('/{historyKerusakan}/denda', [HistoryKerusakanController::class, 'updateDenda'])->name('denda');
     });
-    Route::get('/fix-storage', function () {
+  
+
+});
+
+  Route::get('/fix-storage', function () {
     // Tentukan folder asli tempat gambar disimpan
     $targetFolder = storage_path('app/public');
     
@@ -146,6 +150,4 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     symlink($targetFolder, $linkFolder);
     
     return 'Jembatan storage sukses dibangun di: ' . $linkFolder;
-});
-
 });
