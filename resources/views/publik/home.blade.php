@@ -87,7 +87,7 @@
             @if($logo)
                 {{-- Tampilan jika LOGO ADA: Logo mengikuti bentuk asli, tanpa kotak hiasan --}}
                 <div class="mb-6">
-                    <img src="{{ asset('storage/' . $logo) }}" 
+                    <img src="{{ \Illuminate\Support\Facades\Storage::url($logo) }}"
                         alt="Logo Sekolah" 
                         style="max-height: 80px; width: auto; object-fit: contain; display: block; margin: 0 auto;">
                 </div>

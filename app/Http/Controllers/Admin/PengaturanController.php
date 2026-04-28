@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Artisan; 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Validation\Rules\Password;
 
 class PengaturanController extends Controller
@@ -23,8 +23,8 @@ class PengaturanController extends Controller
             'persentase_denda_hilang' => Pengaturan::ambil('persentase_denda_hilang', 100),
         ];
 
-        $users       = User::all();
-        $daftarKelas = Pengaturan::getDaftarKelas();
+        $users        = User::all();
+        $daftarKelas  = Pengaturan::getDaftarKelas();
         $jamPelajaran = Pengaturan::ambilJson('jam_pelajaran', []);
 
         return view('admin.pengaturan.index', compact(
@@ -61,23 +61,24 @@ class PengaturanController extends Controller
         $daftar = Pengaturan::getDaftarKelas();
         $tingkat = (int) $request->tingkat;
 
-        // Pastikan index ada
         while (count($daftar) <= $tingkat) {
             $daftar[] = [];
         }
 
-        // Cek duplikat
         foreach ($daftar as $group) {
             if (in_array($request->nama_kelas, $group)) {
-                return back()->with('error', "Kelas '{$request->nama_kelas}' sudah ada.");
+                return response()->json(['success' => false, 'message' => "Kelas '{$request->nama_kelas}' sudah ada."], 422);
             }
         }
 
         $daftar[$tingkat][] = $request->nama_kelas;
-
         Pengaturan::simpan('daftar_kelas', json_encode(array_values($daftar)));
 
-        return back()->with('success', "Kelas '{$request->nama_kelas}' berhasil ditambahkan.");
+        return response()->json([
+            'success'     => true,
+            'message'     => "Kelas '{$request->nama_kelas}' berhasil ditambahkan.",
+            'daftarKelas' => Pengaturan::getDaftarKelas(),
+        ]);
     }
 
     public function hapusKelas(Request $request)
@@ -92,12 +93,14 @@ class PengaturanController extends Controller
             $daftar[$i] = array_values(array_filter($group, fn($k) => $k !== $request->nama_kelas));
         }
 
-        // Hapus tingkat kosong
         $daftar = array_values(array_filter($daftar, fn($g) => count($g) > 0));
-
         Pengaturan::simpan('daftar_kelas', json_encode($daftar));
 
-        return back()->with('success', "Kelas '{$request->nama_kelas}' berhasil dihapus.");
+        return response()->json([
+            'success'     => true,
+            'message'     => "Kelas '{$request->nama_kelas}' berhasil dihapus.",
+            'daftarKelas' => Pengaturan::getDaftarKelas(),
+        ]);
     }
 
     public function tambahTingkat(Request $request)
@@ -106,12 +109,11 @@ class PengaturanController extends Controller
             'label_tingkat' => ['required', 'string', 'max:20'],
         ]);
 
-        $daftar = Pengaturan::getDaftarKelas();
-        $daftar[] = []; // Tingkat baru kosong — kelas ditambah satu per satu
-
+        $daftar   = Pengaturan::getDaftarKelas();
+        $daftar[] = [];
         Pengaturan::simpan('daftar_kelas', json_encode($daftar));
 
-        return back()->with('success', "Tingkat baru berhasil ditambahkan.");
+        return back()->with('success', 'Tingkat baru berhasil ditambahkan.');
     }
 
     // ══ JAM PELAJARAN ══
@@ -127,10 +129,9 @@ class PengaturanController extends Controller
 
         $jamList = Pengaturan::ambilJson('jam_pelajaran', []);
 
-        // Cek duplikat
         foreach ($jamList as $jam) {
             if ($jam['mulai'] === $request->mulai) {
-                return back()->with('error', "Jam mulai {$request->mulai} sudah ada.");
+                return response()->json(['success' => false, 'message' => "Jam mulai {$request->mulai} sudah ada."], 422);
             }
         }
 
@@ -140,17 +141,20 @@ class PengaturanController extends Controller
             'selesai' => $request->selesai,
         ];
 
-        // Urutkan berdasarkan jam mulai
         usort($jamList, fn($a, $b) => $a['mulai'] <=> $b['mulai']);
 
-        // Re-numbering
         foreach ($jamList as $i => &$jam) {
             $jam['ke'] = $i + 1;
         }
 
-        Pengaturan::simpan('jam_pelajaran', json_encode(array_values($jamList)));
+        $jamList = array_values($jamList);
+        Pengaturan::simpan('jam_pelajaran', json_encode($jamList));
 
-        return back()->with('success', "Jam ke-{$request->mulai} berhasil ditambahkan.");
+        return response()->json([
+            'success'      => true,
+            'message'      => "Jam berhasil ditambahkan.",
+            'jamPelajaran' => $jamList,
+        ]);
     }
 
     public function hapusJam(Request $request)
@@ -162,14 +166,18 @@ class PengaturanController extends Controller
         $jamList = Pengaturan::ambilJson('jam_pelajaran', []);
         $jamList = array_values(array_filter($jamList, fn($j) => $j['ke'] !== (int) $request->ke));
 
-        // Re-numbering
         foreach ($jamList as $i => &$jam) {
             $jam['ke'] = $i + 1;
         }
 
-        Pengaturan::simpan('jam_pelajaran', json_encode(array_values($jamList)));
+        $jamList = array_values($jamList);
+        Pengaturan::simpan('jam_pelajaran', json_encode($jamList));
 
-        return back()->with('success', 'Jam pelajaran berhasil dihapus.');
+        return response()->json([
+            'success'      => true,
+            'message'      => 'Jam pelajaran berhasil dihapus.',
+            'jamPelajaran' => $jamList,
+        ]);
     }
 
     public function updateJam(Request $request)
@@ -190,9 +198,20 @@ class PengaturanController extends Controller
             }
         }
 
+        // Re-sort dan re-number setelah edit
+        usort($jamList, fn($a, $b) => $a['mulai'] <=> $b['mulai']);
+        foreach ($jamList as $i => &$jam) {
+            $jam['ke'] = $i + 1;
+        }
+
+        $jamList = array_values($jamList);
         Pengaturan::simpan('jam_pelajaran', json_encode($jamList));
 
-        return back()->with('success', "Jam ke-{$request->ke} berhasil diperbarui.");
+        return response()->json([
+            'success'      => true,
+            'message'      => "Jam berhasil diperbarui.",
+            'jamPelajaran' => $jamList,
+        ]);
     }
 
     // ══ USER ══
@@ -207,22 +226,31 @@ class PengaturanController extends Controller
             'username.unique' => 'Username sudah digunakan.',
         ]);
 
-        User::create([
+        $user = User::create([
             'name'     => $request->name,
             'username' => $request->username,
             'password' => Hash::make($request->password),
         ]);
 
-        return back()->with('success', 'Akun admin baru berhasil ditambahkan.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun admin baru berhasil ditambahkan.',
+            'user'    => ['id' => $user->id, 'name' => $user->name, 'username' => $user->username],
+        ]);
     }
 
     public function hapusUser(User $user)
     {
         if ($user->id === auth()->id()) {
-            return back()->with('error', 'Tidak dapat menghapus akun yang sedang digunakan.');
+            return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus akun yang sedang digunakan.'], 422);
         }
+
         $user->delete();
-        return back()->with('success', 'Akun berhasil dihapus.');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun berhasil dihapus.',
+        ]);
     }
 
     public function gantiPassword(Request $request)
@@ -243,30 +271,26 @@ class PengaturanController extends Controller
         return back()->with('success', 'Password berhasil diubah.');
     }
 
-    // Tambahkan di PengaturanController.php
+    public function uploadLogo(Request $request)
+    {
+        $request->validate([
+            'logo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
+        ], [
+            'logo.required' => 'File logo wajib dipilih.',
+            'logo.image'    => 'File harus berupa gambar.',
+            'logo.max'      => 'Ukuran logo maksimal 2MB.',
+        ]);
 
-public function uploadLogo(Request $request)
-{
-    $request->validate([
-        'logo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
-    ], [
-        'logo.required' => 'File logo wajib dipilih.',
-        'logo.image'    => 'File harus berupa gambar.',
-        'logo.max'      => 'Ukuran logo maksimal 2MB.',
-    ]);
+        $logoLama = Pengaturan::ambil('logo_sekolah');
+        if ($logoLama && Storage::disk('public')->exists($logoLama)) {
+            Storage::disk('public')->delete($logoLama);
+        }
 
-    // Hapus logo lama jika ada
-    $logoLama = Pengaturan::ambil('logo_sekolah');
-    if ($logoLama && Storage::disk('public')->exists($logoLama)) {
-        Storage::disk('public')->delete($logoLama);
+        $path = $request->file('logo')->store('logo', 'public');
+        Pengaturan::simpan('logo_sekolah', $path);
+
+        return back()->with('success', 'Logo berhasil diupload.');
     }
-
-    // Simpan logo baru
-    $path = $request->file('logo')->store('logo', 'public');
-    Pengaturan::simpan('logo_sekolah', $path);
-
-    return back()->with('success', 'Logo berhasil diupload.');
-}
 
     public function hapusLogo()
     {
@@ -280,17 +304,15 @@ public function uploadLogo(Request $request)
         return back()->with('success', 'Logo berhasil dihapus.');
     }
 
-   
-        public function backupDanBersihkan()
-        {
-            try {
-                // Menjalankan command lewat code
-                Artisan::call('maintenance:clean');
-                $output = Artisan::output();
+    public function backupDanBersihkan()
+    {
+        try {
+            Artisan::call('maintenance:clean');
+            $output = Artisan::output();
 
-                return back()->with('success', 'Maintenance Berhasil: ' . $output);
-            } catch (\Exception $e) {
-                return back()->with('error', 'Gagal: ' . $e->getMessage());
-            }
+            return back()->with('success', 'Maintenance Berhasil: ' . $output);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal: ' . $e->getMessage());
         }
+    }
 }
