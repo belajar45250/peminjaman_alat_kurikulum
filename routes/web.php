@@ -133,21 +133,3 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
   
 
 });
-
-  Route::get('/fix-storage', function () {
-    // Tentukan folder asli tempat gambar disimpan
-    $targetFolder = storage_path('app/public');
-    
-    // Tentukan folder publik di hosting (biasanya public_html)
-    $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
-    
-    // Hapus jembatan lama kalau ada yang nyangkut/error
-    if (file_exists($linkFolder) || is_link($linkFolder)) {
-        @unlink($linkFolder);
-    }
-    
-    // Buat jembatan baru yang 100% akurat
-    symlink($targetFolder, $linkFolder);
-    
-    return 'Jembatan storage sukses dibangun di: ' . $linkFolder;
-});
