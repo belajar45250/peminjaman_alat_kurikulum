@@ -66,8 +66,9 @@
         @php $logo = \App\Models\Pengaturan::ambil('logo_sekolah'); @endphp
         @if($logo)
         <div style="margin-bottom: 8px;">
+            {{-- Hapus object-fit dan gunakan height saja agar proporsional --}}
             <img src="{{ public_path('storage/' . $logo) }}"
-                style="width: 48px; height: 48px; object-fit: contain; margin: 0 auto; display: block;">
+                style="height: 45px; width: auto; margin: 0 auto; display: block;">
         </div>
         @endif
         <div class="sekolah">{{ \App\Models\Pengaturan::ambil('nama_sekolah', 'Sistem Peminjaman') }}</div>

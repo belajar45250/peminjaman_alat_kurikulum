@@ -289,34 +289,36 @@
 
         {{-- 3. Daftar Kelas --}}
         <div class="bg-paper border border-rule">
-            <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
-                <h2 class="font-serif text-ink text-lg font-normal">Daftar Kelas</h2>
-                <button onclick="document.getElementById('modalTambahKelas').classList.remove('hidden')" class="text-label hover:text-espresso"><i class="fas fa-plus text-xs"></i></button>
-            </div>
-            <div class="px-6 py-5 space-y-4">
-                @foreach($daftarKelas as $tingkat => $group)
-                <div>
-                    <p class="text-[0.5rem] font-bold uppercase text-ghost mb-2">Tingkat {{ $tingkat + 1 }}</p>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach($group as $kelas)
-                        <div class="flex items-center gap-1.5 border border-rule bg-cream/50 px-3 py-1.5 group/kelas">
-                            <span class="font-sans text-[0.72rem] text-dim">{{ $kelas }}</span>
-                            <form method="POST" action="{{ route('admin.pengaturan.hapus-kelas') }}"
-                                onsubmit="return confirm('Hapus kelas {{ $kelas }}?')">
-                                @csrf
-                                <input type="hidden" name="nama_kelas" value="{{ $kelas }}">
-                                <button type="submit"
-                                        class="text-ghost hover:text-red-700 transition-colors opacity-0 group-hover/kelas:opacity-100">
-                                    <i class="fas fa-xmark text-[0.5rem]"></i>
-                                </button>
-                            </form>
-                        </div>
-                        @endforeach
-                    </div>
+    <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+        <h2 class="font-serif text-ink text-lg font-normal">Daftar Kelas</h2>
+        <button onclick="document.getElementById('modalTambahKelas').classList.remove('hidden')" class="text-label hover:text-espresso">
+            <i class="fas fa-plus text-xs"></i>
+        </button>
+    </div>
+    <div class="px-6 py-5 space-y-6">
+        @foreach($daftarKelas as $tingkat => $group)
+        <div>
+            <p class="text-[0.55rem] font-bold uppercase tracking-[0.2em] text-ghost mb-3">Tingkat {{ $tingkat + 1 }}</p>
+            <div class="flex flex-wrap gap-3">
+                @foreach($group as $kelas)
+                <div class="flex items-center gap-2 bg-cream border border-rule pl-4 pr-1 py-1 shadow-sm">
+                    <span class="font-sans text-[0.7rem] font-bold text-ink uppercase tracking-wider">{{ $kelas }}</span>
+                    
+                    {{-- Form Hapus Biasa --}}
+                    <form method="POST" action="{{ route('admin.pengaturan.hapus-kelas') }}" onsubmit="return confirm('Hapus kelas {{ $kelas }}?')">
+                        @csrf
+                        <input type="hidden" name="nama_kelas" value="{{ $kelas }}">
+                        <button type="submit" class="w-8 h-8 flex items-center justify-center text-ghost hover:bg-red-600 hover:text-paper transition-all rounded-sm">
+                            <i class="fas fa-times text-[0.8rem]"></i>
+                        </button>
+                    </form>
                 </div>
                 @endforeach
             </div>
         </div>
+        @endforeach
+    </div>
+</div>
 
         {{-- 4. Manajemen Admin --}}
         <div class="bg-paper border border-rule">

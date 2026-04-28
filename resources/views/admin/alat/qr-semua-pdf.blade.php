@@ -76,14 +76,18 @@
             <div class="grid-row">
                 @foreach($row as $data)
                 <div class="grid-cell">
-                    @php $logo = \App\Models\Pengaturan::ambil('logo_sekolah'); @endphp
-                    @if($logo)
-                    <div style="margin-bottom: 8px;">
-                        <img src="{{ public_path('storage/' . $logo) }}"
-                            style="width: 48px; height: 48px; object-fit: contain; margin: 0 auto; display: block;">
-                    </div>
-                    @endif
+                    {{-- qr-item adalah garis kotaknya, jadi logo harus masuk di dalam sini --}}
                     <div class="qr-item">
+                        
+                        @php $logo = \App\Models\Pengaturan::ambil('logo_sekolah'); @endphp
+                        @if($logo)
+                        <div style="margin-top: 10px; margin-bottom: 4px;">
+                            {{-- CSS diperbaiki agar proporsional --}}
+                            <img src="{{ public_path('storage/' . $logo) }}"
+                                style="height: 35px; width: auto; margin: 0 auto; display: block;">
+                        </div>
+                        @endif
+
                         <img src="data:{{ $data['qrMime'] }};base64,{{ $data['qrBase64'] }}" alt="QR">
                         <div class="nama">{{ $data['alat']->nama_alat }}</div>
 
@@ -98,7 +102,6 @@
                             #{{ $data['alat']->nomor_urut }}
                         </div>
                         @endif
-
 
                         <div class="kode">{{ $data['alat']->kode_alat }}</div>
                     </div>
