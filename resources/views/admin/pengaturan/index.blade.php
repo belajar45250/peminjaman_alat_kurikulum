@@ -151,6 +151,42 @@
             </div>
         </div>
 
+        {{-- 3. Manajemen Admin (dipindah ke kiri, bawah Jam Pelajaran) --}}
+        <div class="bg-paper border border-rule">
+            <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+                <div>
+                    <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Keamanan</p>
+                    <h2 class="font-serif text-ink text-lg font-normal mt-0.5">Manajemen Admin</h2>
+                </div>
+                <button onclick="document.getElementById('modalTambahUser').classList.remove('hidden')" class="border border-rule text-label px-3 py-2 font-sans text-[0.52rem] font-semibold uppercase hover:bg-espresso hover:text-paper transition-all">
+                    <i class="fas fa-plus"></i> Tambah
+                </button>
+            </div>
+            <ul class="divide-y divide-rule/40">
+                @foreach($users as $user)
+                <li class="px-6 py-3.5 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-8 h-8 bg-cream border border-rule flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user text-ghost text-[0.6rem]"></i>
+                        </div>
+                        <div>
+                            <p class="font-sans text-[0.78rem] font-semibold text-ink leading-tight">{{ $user->name }}</p>
+                            <p class="font-sans text-[0.6rem] text-ghost">@ {{ $user->username }}</p>
+                        </div>
+                    </div>
+                    @if($user->id !== auth()->id())
+                    <form method="POST" action="{{ route('admin.pengaturan.hapus-user', $user->id) }}">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="w-7 h-7 border border-rule flex items-center justify-center text-ghost hover:bg-red-900 hover:text-paper transition-colors">
+                            <i class="fas fa-trash-alt text-[0.55rem]"></i>
+                        </button>
+                    </form>
+                    @endif
+                </li>
+                @endforeach
+            </ul>
+        </div>
+
     </div>{{-- END KOLOM KIRI --}}
 
     {{-- ========================================== --}}
@@ -289,62 +325,41 @@
 
         {{-- 3. Daftar Kelas --}}
         <div class="bg-paper border border-rule">
-    <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
-        <h2 class="font-serif text-ink text-lg font-normal">Daftar Kelas</h2>
-        <button onclick="document.getElementById('modalTambahKelas').classList.remove('hidden')" class="text-label hover:text-espresso">
-            <i class="fas fa-plus text-xs"></i>
-        </button>
-    </div>
-    <div class="px-6 py-5 space-y-6">
-        @foreach($daftarKelas as $tingkat => $group)
-        <div>
-            <p class="text-[0.55rem] font-bold uppercase tracking-[0.2em] text-ghost mb-3">Tingkat {{ $tingkat + 1 }}</p>
-            <div class="flex flex-wrap gap-3">
-                @foreach($group as $kelas)
-                <div class="flex items-center gap-2 bg-cream border border-rule pl-4 pr-1 py-1 shadow-sm">
-                    <span class="font-sans text-[0.7rem] font-bold text-ink uppercase tracking-wider">{{ $kelas }}</span>
-                    
-                    {{-- Form Hapus Biasa --}}
-                    <form method="POST" action="{{ route('admin.pengaturan.hapus-kelas') }}" onsubmit="return confirm('Hapus kelas {{ $kelas }}?')">
-                        @csrf
-                        <input type="hidden" name="nama_kelas" value="{{ $kelas }}">
-                        <button type="submit" class="w-8 h-8 flex items-center justify-center text-ghost hover:bg-red-600 hover:text-paper transition-all rounded-sm">
-                            <i class="fas fa-times text-[0.8rem]"></i>
-                        </button>
-                    </form>
+            <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
+                <div>
+                    <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Akademik</p>
+                    <h2 class="font-serif text-ink text-lg font-normal mt-0.5">Daftar Kelas</h2>
+                </div>
+                <button onclick="document.getElementById('modalTambahKelas').classList.remove('hidden')" class="border border-rule text-label px-3 py-2 font-sans text-[0.52rem] font-semibold uppercase hover:bg-espresso hover:text-paper transition-all">
+                    <i class="fas fa-plus"></i> Tambah
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                @foreach($daftarKelas as $tingkat => $group)
+                <div>
+                    <p class="text-[0.5rem] font-bold uppercase text-ghost mb-2">Tingkat {{ $tingkat + 1 }}</p>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($group as $kelas)
+                        <div class="flex items-center gap-1.5 border border-rule bg-cream/50 px-3 py-1.5 group/kelas">
+                            <span class="font-sans text-[0.72rem] text-dim">{{ $kelas }}</span>
+                            <form method="POST" action="{{ route('admin.pengaturan.hapus-kelas') }}"
+                                onsubmit="return confirm('Hapus kelas {{ $kelas }}?')">
+                                @csrf
+                                <input type="hidden" name="nama_kelas" value="{{ $kelas }}">
+                                <button type="submit"
+                                        class="text-ghost hover:text-red-700 transition-colors opacity-0 group-hover/kelas:opacity-100">
+                                    <i class="fas fa-xmark text-[0.5rem]"></i>
+                                </button>
+                            </form>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
                 @endforeach
             </div>
         </div>
-        @endforeach
-    </div>
-</div>
 
-        {{-- 4. Manajemen Admin --}}
-        <div class="bg-paper border border-rule">
-            <div class="border-b border-rule px-6 py-4 flex items-center justify-between">
-                <h2 class="font-serif text-ink text-lg font-normal">Manajemen Admin</h2>
-                <button onclick="document.getElementById('modalTambahUser').classList.remove('hidden')" class="text-label hover:text-espresso"><i class="fas fa-plus text-xs"></i></button>
-            </div>
-            <ul class="divide-y divide-rule/40">
-                @foreach($users as $user)
-                <li class="px-6 py-3 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-bold text-ink leading-tight">{{ $user->name }}</p>
-                        <p class="text-[0.6rem] text-ghost">@ {{ $user->username }}</p>
-                    </div>
-                    @if($user->id !== auth()->id())
-                    <form method="POST" action="{{ route('admin.pengaturan.hapus-user', $user->id) }}">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="text-ghost hover:text-red-700"><i class="fas fa-trash-alt text-[0.7rem]"></i></button>
-                    </form>
-                    @endif
-                </li>
-                @endforeach
-            </ul>
-        </div>
-
-        {{-- 5. Maintenance Data --}}
+        {{-- 4. Maintenance Data --}}
         <div class="bg-paper border border-rule">
             <div class="border-b border-rule px-6 py-4">
                 <p class="font-sans text-[0.5rem] font-semibold tracking-[0.28em] uppercase text-label">Sistem</p>
